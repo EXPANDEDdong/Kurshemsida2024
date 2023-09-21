@@ -11,6 +11,8 @@ export const countries = mysqlTable('countries', {
 export const cities = mysqlTable('cities', {
   id: bigint('id', { mode: 'number' }).primaryKey().autoincrement(),
   name: varchar('name', { length: 256 }),
-  countryId: int('country_id').references(() => countries.id),
+  countryId: int('country_id'),
   popularity: mysqlEnum('popularity', ['unknown', 'known', 'popular']),
 });
+
+// these are just preset schemas from drizzles website so i can test stuff
