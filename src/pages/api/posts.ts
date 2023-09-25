@@ -1,13 +1,14 @@
-import { createUser } from "@lib/posts";
+import { createPost, createUser } from "@lib/posts";
 import type { APIRoute } from "astro";
 
 export const POST: APIRoute = async ({ params, request }) => {
   const body = await request.json();
-  const name = body.name;
-  const asd = await createUser({ name });
-  console.log(asd);
+  const title = body.title;
+  const content = body.content;
+  await createPost({ title, content });
+  
   return {
     status: 200,
-    body: JSON.stringify(body),
+    body: JSON.stringify("hello"),
   };
 };

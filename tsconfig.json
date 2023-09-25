@@ -2,18 +2,36 @@
   "extends": "astro/tsconfigs/strict",
   "compilerOptions": {
     "jsx": "react-jsx",
-    "jsxImportSource": "preact",
+    "jsxImportSource": "react",
     "baseUrl": ".",
     "paths": {
-      "@blocks/*": ["src/blocks/*"],
-      "@components/*": ["src/components/*"],
-      "@drizzle/*": ["drizzle/*"],
-      "@layouts/*": ["src/layouts/*"],
-      "@lib/*": ["src/lib/*"],
-      "@utils/*": ["src/utils/*"],
-      "@public/*": ["../public/*"],
-      "~/*": ["src/*"]
+      "@blocks/*": [
+        "src/blocks/*"
+      ],
+      "@components/*": [
+        "src/components/*"
+      ],
+      "@drizzle/*": [
+        "drizzle/*"
+      ],
+      "@layouts/*": [
+        "src/layouts/*"
+      ],
+      "@lib/*": [
+        "src/lib/*"
+      ],
+      "@utils/*": [
+        "src/utils/*"
+      ],
+      "@public/*": [
+        "../public/*"
+      ],
+      "~/*": [
+        "src/*"
+      ]
     },
-    "types": ["bun-types"]
+    "types": [
+      "bun-types"
+    ]
   }
 }
