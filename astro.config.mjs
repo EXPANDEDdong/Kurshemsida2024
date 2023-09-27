@@ -3,11 +3,11 @@ import tailwind from "@astrojs/tailwind";
 import vercel from "@astrojs/vercel/serverless";
 import sitemap from "@astrojs/sitemap";
 
-import react from "@astrojs/react";
+import preact from "@astrojs/preact";
 
 // https://astro.build/config
 export default defineConfig({
-  integrations: [tailwind(), sitemap(), react()],
+  integrations: [tailwind(), sitemap(), preact()],
   output: "server",
   adapter: vercel()
 });

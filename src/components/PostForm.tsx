@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import fetchJson from "@utils/fetchJson";
+import { useState } from "preact/hooks";
 
 export default function PostForm() {
-  const [Title, setTitle] = useState("");
-  const [Content, setContent] = useState("");
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
 
   const handleInputTitle = (e) => {
     setTitle(e.target.value);
@@ -12,20 +13,17 @@ export default function PostForm() {
   };
   const handleSubmit = async (event: SubmitEvent) => {
     event.preventDefault();
-    if (Title != "" && Content != "") {
+    if (title != "" && content != "") {
       const body = {
-        title: Title,
-        content: Content,
+        title: title,
+        content: content,
       };
       try {
-        const response = await fetch("./api/posts", {
+        const response = fetchJson("/api/posts", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
           body: JSON.stringify(body),
         });
-        const result = await response.json();
+        const result = await response;
         console.log(result);
       } catch (error) {
         console.error("Error submitting form:", error);
@@ -40,18 +38,18 @@ export default function PostForm() {
   return (
     <div>
       <form onSubmit={handleSubmit}>
-        <p>please: {Title}</p>
+        <p>please: {title}</p>
         <input
           type="text"
-          value={Title}
+          value={title}
           onInput={handleInputTitle}
           className="border border-black"
           required
         />
-        <p>please: {Content}</p>
+        <p>please: {content}</p>
         <input
           type="text"
-          value={Content}
+          value={content}
           onInput={handleContentTitle}
           className="border border-black"
           required
