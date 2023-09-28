@@ -1,12 +1,9 @@
-import { selectPost } from "@lib/posts";
+import { getPosts } from "@lib/posts";
 import type { APIRoute } from "astro";
 
 export const GET: APIRoute = async () => {
-    const body = await selectPost();
+    const posts = await getPosts();
     return new Response (
-        JSON.stringify({
-            title: body.title,
-            content: body.content,
-        })
+        JSON.stringify(posts)
     )
 }

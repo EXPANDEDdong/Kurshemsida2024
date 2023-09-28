@@ -18,10 +18,6 @@ export const createPost = async (data: InsertPost) => {
     .where(eq(posts.id, parseInt(insertData.insertId)));
 };
 
-export const selectPost = async () => {
-  const selectData = await db.select({
-    title: posts.title,
-    content: posts.content,
-  }).from(posts);
-  return selectData;
+export const getPosts = async () => {
+  return await db.select().from(posts)
 }
