@@ -1,5 +1,5 @@
 import { posts, users } from "@drizzle/schema/posts";
-import db, { type InsertPost, type InsertUser } from "@lib/db";
+import db, { type InsertPost, type InsertUser, type SelectPost } from "@lib/db";
 import { eq } from "drizzle-orm";
 
 export const createUser = async (data: InsertUser) => {
@@ -17,3 +17,11 @@ export const createPost = async (data: InsertPost) => {
     .from(posts)
     .where(eq(posts.id, parseInt(insertData.insertId)));
 };
+
+export const selectPost = async () => {
+  const selectData = await db.select({
+    title: posts.title,
+    content: posts.content,
+  }).from(posts);
+  return selectData;
+}
