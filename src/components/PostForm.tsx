@@ -8,7 +8,7 @@ export default function PostForm() {
   const handleInputTitle = (e) => {
     setTitle(e.target.value);
   };
-  const handleContentTitle = (e) => {
+  const handleInputContent = (e) => {
     setContent(e.target.value);
   };
   const handleSubmit = async (event: SubmitEvent) => {
@@ -19,12 +19,10 @@ export default function PostForm() {
         content: content,
       };
       try {
-        const response = fetchJson("/api/posts", {
+        const result = await fetchJson("/api/posts", {
           method: "POST",
           body: JSON.stringify(body),
         });
-        const result = await response;
-        console.log(result);
       } catch (error) {
         console.error("Error submitting form:", error);
       }
@@ -38,7 +36,7 @@ export default function PostForm() {
   return (
     <div>
       <form onSubmit={handleSubmit}>
-        <p>please: {title}</p>
+        <p>Title: {title}</p>
         <input
           type="text"
           value={title}
@@ -46,11 +44,11 @@ export default function PostForm() {
           className="border border-black"
           required
         />
-        <p>please: {content}</p>
+        <p>Content: {content}</p>
         <input
           type="text"
           value={content}
-          onInput={handleContentTitle}
+          onInput={handleInputContent}
           className="border border-black"
           required
         />
