@@ -1,4 +1,4 @@
-import { createPost } from "@lib/posts";
+import { createPost } from "~/server/posts";
 import type { APIRoute } from "astro";
 
 export const POST: APIRoute = async ({ params, request }) => {

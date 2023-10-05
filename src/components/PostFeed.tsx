@@ -14,11 +14,8 @@ export default function PostFeed() {
   const [posts, setPosts] = useState([]);
 
   async function getPosts() {
-    const result = await fetchJson("/api/feed", {
-      method: "GET",
-    });
-    const posts = await result;
-    setPosts(posts);
+    const result = await fetchJson("/api/feed");
+    setPosts(result);
   }
   return (
     <div>

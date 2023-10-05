@@ -1,4 +1,4 @@
-import { getPosts } from "@lib/posts";
+import { getPosts } from "~/server/posts";
 import type { APIRoute } from "astro";
 
 export const GET: APIRoute = async () => {
