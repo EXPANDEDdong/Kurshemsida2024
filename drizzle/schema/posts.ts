@@ -1,8 +1,9 @@
-import { int, mysqlSchema, mysqlTable, text } from "drizzle-orm/mysql-core";
+import { int, mysqlTable, text, varchar } from "drizzle-orm/mysql-core";
 
 export const users = mysqlTable("user", {
   id: int("id").primaryKey().autoincrement(),
-  name: text("name"),
+  username: varchar("username", { length: 36 }).unique(),
+  password: text("password"),
 });
 
 export const posts = mysqlTable("post", {

@@ -1,10 +1,16 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import PostForm from "@components/PostForm";
+import PostFeed from "@components/PostFeed";
+import Login from "@components/Login";
 ---
 
-<Layout title="Welcome to Astro.">
-  <main><PostForm client:load /></main>
+<Layout title="Balls">
+  <main>
+    <!-- <PostForm client:load /> -->
+    <PostFeed client:load />
+    <Login client:load />
+  </main>
 </Layout>
 
 <style></style>
