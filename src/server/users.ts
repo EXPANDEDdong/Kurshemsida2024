@@ -1,21 +1,21 @@
 import crypto from "crypto";
 import { users } from "@drizzle/schema/posts";
-import db, { type InsertUser } from "~/server/db";
+import db, { type InsertUser, type SelectUser } from "~/server/db";
 import { eq } from "drizzle-orm";
 import { SignJWT, jwtVerify, importJWK } from "jose";
 
 interface CustomData {
   username: string;
-}
+};
 
-interface JwtPayload {
-  iss: string;
+export interface JwtPayload {
   sub: string;
-  aud: string;
   exp: number;
   iat: number;
   customData: CustomData;
-}
+};
+
+// ===============================================================================
 
 const generateSalt = (length: number): string => {
   return crypto
@@ -37,17 +37,19 @@ const encryptPassword = async (password: string): Promise<string> => {
   return `${salt}$${passwordHash}`;
 };
 
-const generateToken = async (payload: JwtPayload): Promise<string> => {
+export const generateToken = async (payload: JwtPayload): Promise<string> => {
   const secretKey = await importJWK({
-    kty: 'oct',
+    kty: "oct",
     k: import.meta.env.JWT_SECRET, // Replace this with your base64 encoded secret
-    alg: 'HS256'
+    alg: "HS256",
   });
 
   return await new SignJWT(payload)
-    .setProtectedHeader({ alg: 'HS256' })
+    .setProtectedHeader({ alg: "HS256" })
     .sign(secretKey);
 };
+
+// ===============================================================================
 
 export const createUser = async (
   data: InsertUser
@@ -59,14 +61,18 @@ export const createUser = async (
       password: encryptedPassword,
     });
     const user = await db
-      .select(users)
-      .where({ id: insertData.insertId })
-      .single();
-    return { success: true, user, message: "User created" };
+      .select()
+      .from(users)
+      .where(eq(users.id, parseInt(insertData.insertId)));
+    const userData: SelectUser = user[0];
+    return { success: true, user: userData, message: "User created" };
   } catch (error) {
     return { success: false, user: null, message: "User already exist" };
   }
 };
+
+// ===============================================================================
+
 const verifyPassword = async (
   storedPassword: string,
   providedPassword: string
@@ -76,36 +82,33 @@ const verifyPassword = async (
   return extractedHash === hashedProvidedPassword;
 };
 
-export const loginUser = async (username: string, providedPassword: string) => {
+
+
+export const loginUser = async (
+  username: string,
+  providedPassword: string
+): Promise<{ message: string; user: SelectUser | null }> => {
   // Retrieve user from database
   const user = await db
     .select()
     .from(users)
-    .where(eq(users.username, username))
-    .first();
+    .where(eq(users.username, username));
 
-  if (!user) {
-    return "User not found";
+  const userData: SelectUser = user[0];
+
+  if (!userData) {
+    return { message: "User not found", user: null };
   }
 
-  const isValid = await verifyPassword(user.password, providedPassword);
-
+  const isValid = await verifyPassword(userData.password, providedPassword);
   if (isValid) {
     // Passwords match
-    const payload: JwtPayload = {
-      iss: 'my-app.com',
-      sub: user.id,
-      aud: 'my-app.com',
-      exp: Math.floor(Date.now() / 1000) + (60 * 60),
-      iat: Math.floor(Date.now() / 1000),
-      customData: {
-        username: username
-      }
-    };
-    const token = generateToken(payload);
-    return token;
+
+    return { message: "Logged In", user: userData };
   } else {
     // Passwords do not match
-    return "Invalid password";
+    return { message: "Invalid password", user: null };
   }
 };
+
+// ===============================================================================
