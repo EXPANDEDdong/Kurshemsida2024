@@ -67,7 +67,7 @@ export const createUser = async (
     const userData: SelectUser = user[0];
     return { success: true, user: userData, message: "User created" };
   } catch (error) {
-    return { success: false, user: null, message: "User already exist" };
+    return { success: false, user: null, message: "User already exists" };
   }
 };
 
@@ -97,17 +97,17 @@ export const loginUser = async (
   const userData: SelectUser = user[0];
 
   if (!userData) {
-    return { message: "User not found", user: null };
+    return { message: "Invalid username or password", user: null };
   }
 
   const isValid = await verifyPassword(userData.password, providedPassword);
   if (isValid) {
     // Passwords match
 
-    return { message: "Logged In", user: userData };
+    return { message: "Login Successful", user: userData };
   } else {
     // Passwords do not match
-    return { message: "Invalid password", user: null };
+    return { message: "Invalid username or password", user: null };
   }
 };
 
