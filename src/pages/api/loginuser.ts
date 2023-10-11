@@ -12,22 +12,21 @@ export const POST: APIRoute = async ({ params, request }) => {
       status: 401,
       body: JSON.stringify(message),
     };
-  } else {
-    const payload: JwtPayload = {
-      sub: JSON.stringify(user.id),
-      exp: Math.floor(Date.now() / 1000) + 60 * 60,
-      iat: Math.floor(Date.now() / 1000),
-      customData: {
-        username: username,
-      },
-    };
-    const token = generateToken(payload);
-    return {
-      status: 200,
-      body: JSON.stringify(message),
-      headers: {
-        'Set-Cookie': `authToken=${token}; Path=/; HttpOnly; Secure`,
-      },
-    };
   }
+  const payload: JwtPayload = {
+    sub: JSON.stringify(user.id),
+    exp: Math.floor(Date.now() / 1000) + 60 * 60,
+    iat: Math.floor(Date.now() / 1000),
+    customData: {
+      username: username,
+    },
+  };
+  const token = generateToken(payload);
+  return {
+    status: 200,
+    body: JSON.stringify(message),
+    headers: {
+      'Set-Cookie': `authToken=${token}; Path=/; HttpOnly; Secure`,
+    },
+  };
 };
