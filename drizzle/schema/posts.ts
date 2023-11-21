@@ -1,13 +1,49 @@
 import { int, mysqlTable, text, varchar } from "drizzle-orm/mysql-core";
+import { createId } from '@paralleldrive/cuid2';
+import { relations } from "drizzle-orm";
 
 export const users = mysqlTable("user", {
-  id: int("id").primaryKey().autoincrement(),
-  username: varchar("username", { length: 36 }).unique(),
-  password: text("password"),
+  id: varchar('id', { length: 128 }).$defaultFn(() => createId()).primaryKey(),
+  email: varchar("email", { length: 50 }).unique(),
+  username: varchar("username", { length: 36 }).unique().notNull(),
+  description: varchar("description", { length: 150 }).$default(() => "User Description"),
+  password: text("password").notNull(),
 });
 
 export const posts = mysqlTable("post", {
-  id: int("id").primaryKey().autoincrement(),
-  title: text("title"),
-  content: text("content"),
+  id: varchar('id', { length: 128 }).$defaultFn(() => createId()).primaryKey().notNull(),
+  authorId: varchar('authorId', { length: 128 }).notNull(),
+  title: text("title").notNull(),
+  content: text("content").notNull(),
 });
+
+export const comments = mysqlTable("comment", {
+  id: varchar('id', { length: 128 }).$defaultFn(() => createId()).primaryKey().notNull(),
+  targetPostId: varchar('targetPostId', { length: 128 }).notNull(),
+  authorId: varchar('authorId', { length: 128 }).notNull(),
+  content: text("content"),
+})
+
+export const usersRelations = relations(users, ({ many }) => ({
+  posts: many(posts),
+  comments: many(comments)
+}));
+
+export const postsRelations = relations(posts, ({ one, many }) => ({
+  user: one(users, {
+    fields: [posts.authorId],
+    references: [users.id]
+  }),
+  comments: many(comments)
+}));
+
+export const commentsRelations = relations(comments, ({ one }) => ({
+  user: one (users, {
+    fields: [comments.authorId],
+    references: [users.id]
+  }),
+  post: one(posts, {
+    fields: [comments.targetPostId],
+    references: [posts.id]
+  })
+}));

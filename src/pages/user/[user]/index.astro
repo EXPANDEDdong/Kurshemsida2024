@@ -1,0 +1,29 @@
+---
+import Layout from "@layouts/Layout.astro";
+import fetchJson from "@utils/fetchJson";
+import PostFeed from "@components/PostFeed";
+import CurrentUser from "@components/CurrentUser";
+const { user } = Astro.params;
+
+const origin = Astro.url.origin;
+const body = {
+  username: user,
+};
+const userPage = await fetchJson(`${origin}/api/getuser`, {
+  method: "POST",
+  body: JSON.stringify(body),
+});
+if (!userPage.username) {
+  return Astro.redirect("/404");
+}
+---
+
+<Layout title={user || "User not found"}>
+  <div class="w-full">
+    <div class="w-full bg-neutral-50 shadow-xl mb-8 flex flex-col gap-4 p-4">
+      <h1 class="text-2xl font-bold">{userPage.username}</h1>
+      <p class="text-lg">{userPage.description}</p>
+    </div>
+    <PostFeed feed={userPage.posts} client:visible />
+  </div>
+</Layout>

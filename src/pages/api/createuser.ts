@@ -1,4 +1,4 @@
-import { createUser, generateToken, type JwtPayload } from "~/server/users";
+import { createUser, generateToken, verifyToken, type JwtPayload } from "~/server/users";
 import type { APIRoute } from "astro";
 
 function isValidUsername(username: string) {
@@ -9,29 +9,31 @@ function isValidUsername(username: string) {
   return regex.test(username);
 }
 
-export const POST: APIRoute = async ({ params, request }) => {
+export const POST: APIRoute = async ({ cookies, request }) => {
   const body = await request.json();
+  const email = String(body.email);
   const username = String(body.username);
   const password = body.password;
   const isValid = isValidUsername(username);
   if (!isValid) {
-    return {
+    return new Response(JSON.stringify({
+      success: false,
+      message:
+        "Invalid username, the username should be 4 - 36 characters only containing letters and numbers.",
+    }), {
       status: 400,
-      body: JSON.stringify({
-        success: false,
-        message:
-          "Invalid username, the username should be 4 - 36 characters only containing letters and numbers.",
-      }),
-    };
+      
+    });
   }
 
-  const { user, message } = await createUser({ username, password });
+  const { user, message } = await createUser({ email, username, password });
   if (!user) {
-    return {
+    return new Response (JSON.stringify(message), {
       status: 409,
-      body: JSON.stringify(message),
-    };
+      
+    });
   }
+
   const payload: JwtPayload = {
     sub: JSON.stringify(user?.id),
     exp: Math.floor(Date.now() / 1000) + 60 * 60,
@@ -40,13 +42,15 @@ export const POST: APIRoute = async ({ params, request }) => {
       username: username,
     },
   };
-  const token = generateToken(payload);
-
-  return {
-    status: 200,
-    body: JSON.stringify(message),
-    headers: {
-      'Set-Cookie': `authToken=${token}; Path=/; HttpOnly; Secure`,
-    },
-  };
+  const token = await generateToken(payload);
+  cookies.set("authToken", token, {
+    httpOnly: true,
+    secure: true,
+    path: "/",
+    maxAge: 60 * 60 * 24 * 7
+  });
+  return new Response(JSON.stringify(message), {
+    status: 200, 
+    });
 };
+

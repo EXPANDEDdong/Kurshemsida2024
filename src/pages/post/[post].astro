@@ -1,0 +1,40 @@
+---
+import Layout from "@layouts/Layout.astro";
+import fetchJson from "@utils/fetchJson";
+import PostFeed from "@components/PostFeed";
+import Post from "@components/blocks/Post";
+import CommentsList from "@components/CommentsList";
+const { post } = Astro.params;
+const id = String(post);
+const body = {
+  id: id,
+};
+const origin = Astro.url.origin;
+const postPage = await fetchJson(`${origin}/api/singlePost`, {
+  method: "POST",
+  body: JSON.stringify(body),
+});
+if (!postPage) {
+  return Astro.redirect("/404");
+}
+---
+
+<Layout title={`Post` || "User not found"}>
+  <div class="w-full">
+    <div class="w-full bg-neutral-50 shadow-xl mb-8 p-4 grid">
+      {
+        postPage ? (
+          <Post
+            username={postPage.user.username}
+            id={postPage.id}
+            title={postPage.title}
+            content={postPage.content}
+            onFeed={false}
+            client:load
+          />
+        ) : null
+      }
+    </div>
+    <CommentsList comments={postPage.comments} client:load />
+  </div>
+</Layout>

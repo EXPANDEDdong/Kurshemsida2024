@@ -1,4 +1,6 @@
 ---
+import CurrentUser from "@components/CurrentUser";
+import fetchJson from "@utils/fetchJson";
 interface Props {
   title: string;
 }
@@ -7,7 +9,7 @@ const { title } = Astro.props;
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en" class="w-screen h-screen">
   <head>
     <meta charset="UTF-8" />
     <meta name="description" content="Astro description" />
@@ -16,7 +18,7 @@ const { title } = Astro.props;
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
   </head>
-  <body>
+  <body class="w-full h-full">
     <slot />
   </body>
 </html>

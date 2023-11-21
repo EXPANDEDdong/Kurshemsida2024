@@ -2,14 +2,21 @@
 import Layout from "../layouts/Layout.astro";
 import PostForm from "@components/PostForm";
 import PostFeed from "@components/PostFeed";
-import Login from "@components/Login";
+import fetchJson from "@utils/fetchJson";
+const origin = Astro.url.origin;
+const result = await fetchJson(`${origin}/api/feed`);
 ---
 
 <Layout title="Balls">
-  <main>
-    <!-- <PostForm client:load /> -->
-    <PostFeed client:load />
-    <Login client:load />
+  <main class="flex flex-row h-screen">
+    <div class="w-full h-full">
+      <div class="flex flex-col justify-evenly px-6 py-2 items-center h-full">
+        <PostForm client:load />
+      </div>
+    </div>
+    <div class="w-full h-screen overflow-x-clip overflow-y-scroll">
+      <PostFeed feed={result} client:load />
+    </div>
   </main>
 </Layout>
 

@@ -1,29 +1,29 @@
 import fetchJson from "@utils/fetchJson";
 import { useEffect, useState } from "preact/hooks";
+import type { PostsData } from "../server/users";
+import type { PostsOnFeed } from "~/server/posts";
+import Post from "./blocks/Post";
 
-interface PostsArray {
-  id: number;
-  title: string;
-  content: string;
-}
-
-export default function PostFeed() {
+export default function PostFeed({ feed }: { feed: PostsOnFeed[] }) {
   useEffect(() => {
-    getPosts();
+    getPosts(feed);
   }, []);
-  const [posts, setPosts] = useState([]);
+  const [posts, setPosts] = useState<PostsOnFeed[]>([]);
 
-  async function getPosts() {
-    const result = await fetchJson("/api/feed");
-    setPosts(result);
+  async function getPosts(feed: PostsOnFeed[]) {
+    setPosts(feed);
   }
   return (
-    <div>
-      {posts?.map((post: PostsArray) => (
-        <div key={post?.id}>
-          <h3>{post?.title}</h3>
-          <p>{post?.content}</p>
-        </div>
+    <div className="flex flex-col gap-4 items-center">
+      {posts.map((post: PostsOnFeed, index) => (
+        <Post
+          key={index}
+          id={post.id}
+          username={post.user.username}
+          title={post.title}
+          content={post.content}
+          onFeed={true}
+        />
       ))}
     </div>
   );
