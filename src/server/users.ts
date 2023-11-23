@@ -109,10 +109,12 @@ export interface CommentsData {
     username: string;
 };
     content: string | null;
+    postedDate: Date;
     post: {
         id: string;
         title: string | null;
         content: string | null;
+        postedDate: Date;
         user: {
             username: string | null;
         };
@@ -123,11 +125,13 @@ export interface PostsData {
   id: string;
     title: string;
     content: string;
+    postedDate: Date;
     user: {
       username: string;
   };
     comments: {
         content: string | null;
+        postedDate: Date;
         user: {
             username: string;
         };
@@ -189,10 +193,12 @@ export const getUser = async (
       },
       with: {
         posts: {
+          orderBy: (posts, { desc }) => [desc(posts.postedDate)],
           columns: {
             id: true,
             title: true,
-            content: true
+            content: true,
+            postedDate: true
           },
         with: {
           user: {
@@ -202,7 +208,8 @@ export const getUser = async (
           },
           comments: {
             columns: {
-              content: true
+              content: true,
+              postedDate: true
             },
             with: {
               user: {
@@ -215,15 +222,18 @@ export const getUser = async (
         }
       },
         comments: {
+          orderBy: (comments, { desc }) => [desc(comments.postedDate)],
           columns: {
-            content: true
+            content: true,
+            postedDate: true
           },
           with: {
             post: {
               columns: {
                 id: true,
                 title: true,
-                content: true
+                content: true,
+                postedDate: true
               },
               with: {
                 user: {

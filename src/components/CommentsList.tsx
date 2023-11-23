@@ -1,5 +1,6 @@
 import { useEffect, useState } from "preact/hooks";
 import type { CommentsData } from "../server/users";
+import Comment from "@components/blocks/Comment";
 
 export default function PostFeed({ comments }: { comments: CommentsData[] }) {
   useEffect(() => {
@@ -13,18 +14,12 @@ export default function PostFeed({ comments }: { comments: CommentsData[] }) {
   return (
     <div className="flex flex-col gap-4 items-center">
       {commentsList.map((comm: CommentsData, index) => (
-        <div
+        <Comment
           key={index}
-          className="py-4 px-6 bg-neutral-50 rounded-lg shadow-lg w-11/12 relative"
-        >
-          <a href={`/user/${comm.user.username}`} className={"w-fit"}>
-            {comm.user.username}
-          </a>
-          <div className={"w-full h-full relative"}>
-            <hr className="my-4 bg-neutral-200 text-neutral-200 border-neutral-200" />
-            <p className="text-neutral-900 text-lg">{comm.content}</p>
-          </div>
-        </div>
+          username={comm.user.username}
+          content={comm.content}
+          date={comm.postedDate}
+        />
       ))}
     </div>
   );

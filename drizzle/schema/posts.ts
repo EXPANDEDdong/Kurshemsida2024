@@ -1,4 +1,4 @@
-import { int, mysqlTable, text, varchar } from "drizzle-orm/mysql-core";
+import { datetime, int, mysqlTable, text, varchar } from "drizzle-orm/mysql-core";
 import { createId } from '@paralleldrive/cuid2';
 import { relations } from "drizzle-orm";
 
@@ -13,6 +13,7 @@ export const users = mysqlTable("user", {
 export const posts = mysqlTable("post", {
   id: varchar('id', { length: 128 }).$defaultFn(() => createId()).primaryKey().notNull(),
   authorId: varchar('authorId', { length: 128 }).notNull(),
+  postedDate: datetime('postedDate', { mode: "date" }).$default(() => new Date()).notNull(),
   title: text("title").notNull(),
   content: text("content").notNull(),
 });
@@ -21,6 +22,7 @@ export const comments = mysqlTable("comment", {
   id: varchar('id', { length: 128 }).$defaultFn(() => createId()).primaryKey().notNull(),
   targetPostId: varchar('targetPostId', { length: 128 }).notNull(),
   authorId: varchar('authorId', { length: 128 }).notNull(),
+  postedDate: datetime('postedDate', { mode: "date" }).$default(() => new Date()).notNull(),
   content: text("content"),
 })
 

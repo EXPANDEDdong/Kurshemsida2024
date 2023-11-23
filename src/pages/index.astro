@@ -5,6 +5,7 @@ import PostFeed from "@components/PostFeed";
 import fetchJson from "@utils/fetchJson";
 const origin = Astro.url.origin;
 const result = await fetchJson(`${origin}/api/feed`);
+console.log(result);
 ---
 
 <Layout title="Balls">

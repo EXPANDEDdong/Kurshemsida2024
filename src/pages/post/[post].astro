@@ -23,16 +23,17 @@ if (!postPage) {
   <div class="w-full">
     <div class="w-full bg-neutral-50 shadow-xl mb-8 p-4 grid">
       {
-        postPage ? (
+        postPage && (
           <Post
             username={postPage.user.username}
             id={postPage.id}
             title={postPage.title}
             content={postPage.content}
+            date={postPage.postedDate}
             onFeed={false}
             client:load
           />
-        ) : null
+        )
       }
     </div>
     <CommentsList comments={postPage.comments} client:load />

@@ -22,6 +22,7 @@ export default function PostFeed({ feed }: { feed: PostsOnFeed[] }) {
           username={post.user.username}
           title={post.title}
           content={post.content}
+          date={post.postedDate}
           onFeed={true}
         />
       ))}

@@ -8,11 +8,13 @@ export interface PostsOnFeed {
   id: string;
     title: string;
     content: string;
+    postedDate: Date;
     user: {
       username: string;
   };
     comments: {
         content: string | null;
+        postedDate: Date;
         user: {
             username: string;
         };
@@ -33,6 +35,7 @@ export const createComment = async (data: InsertComment) => {
 
 export const getPosts = async ():Promise<PostsOnFeed[]> => {
   const posts = await db.query.posts.findMany({
+    orderBy: (posts, { desc }) => [desc(posts.postedDate)],
     with: {
       user: {
         columns: {
@@ -41,7 +44,8 @@ export const getPosts = async ():Promise<PostsOnFeed[]> => {
       },
       comments: {
         columns: {
-          content: true
+          content: true,
+          postedDate: true
         },
         with: {
           user: {
@@ -55,7 +59,8 @@ export const getPosts = async ():Promise<PostsOnFeed[]> => {
     columns: {
       id: true,
       content: true,
-      title: true
+      title: true,
+      postedDate: true
     }
   })
   return posts;
@@ -71,6 +76,11 @@ export const getSinglePost = async (postId: string):Promise<PostsOnFeed | undefi
         }
       },
       comments: {
+        orderBy: (comments, { desc }) => [desc(comments.postedDate)],
+        columns: {
+          content: true,
+          postedDate: true
+        },
         with: {
           user: {
             columns: {
@@ -83,7 +93,8 @@ export const getSinglePost = async (postId: string):Promise<PostsOnFeed | undefi
     columns: {
       id: true,
       content: true,
-      title: true
+      title: true,
+      postedDate: true
     }
   })
 }
