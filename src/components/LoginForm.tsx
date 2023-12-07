@@ -76,7 +76,7 @@ export default function LoginForm() {
             type="submit"
             className="p-2 text-white h-12 w-24 text-center bg-blue-500 rounded-lg shadow-lg hover:bg-blue-400 active:bg-blue-600 active:shadow-sm active:w-[5.5rem] transition-all"
           >
-            Create
+            Log in
           </button>
         </div>
       </form>

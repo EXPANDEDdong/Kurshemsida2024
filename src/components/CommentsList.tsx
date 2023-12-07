@@ -2,13 +2,21 @@ import { useEffect, useState } from "preact/hooks";
 import type { CommentsData } from "../server/users";
 import Comment from "@components/blocks/Comment";
 
-export default function PostFeed({ comments }: { comments: CommentsData[] }) {
+export default function PostFeed({
+  comments,
+  currentUser,
+  onUserPage,
+}: {
+  comments: CommentsData[];
+  currentUser: string;
+  onUserPage: boolean;
+}) {
   useEffect(() => {
-    getComms(comments);
+    getComments(comments);
   }, []);
   const [commentsList, setComments] = useState<CommentsData[]>([]);
 
-  async function getComms(comments: CommentsData[]) {
+  async function getComments(comments: CommentsData[]) {
     setComments(comments);
   }
   return (
@@ -16,8 +24,12 @@ export default function PostFeed({ comments }: { comments: CommentsData[] }) {
       {commentsList.map((comm: CommentsData, index) => (
         <Comment
           key={index}
+          id={comm.id}
+          targetId={comm.post.id}
           username={comm.user.username}
           content={comm.content}
+          onUserPage={onUserPage}
+          currentUser={currentUser}
           date={comm.postedDate}
         />
       ))}

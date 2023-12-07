@@ -1,92 +1,69 @@
 import { useEffect, useState } from "preact/hooks";
+import DateTime from "./TimeSince";
+import { checkCurrentUser } from "./Post";
+import fetchJson from "@utils/fetchJson";
 
 export default function Comment({
+  id,
+  targetId,
   username,
   content,
   date,
+  onUserPage,
+  currentUser,
 }: {
+  id: string;
+  targetId: string;
   username: string;
   content: string | null;
   date: Date;
+  onUserPage: boolean;
+  currentUser: string;
 }) {
   useEffect(() => {
-    const newDate = new Date(date);
-    const timeSince = timeDiff(new Date(), newDate);
-    setCommentDate(timeSince || "No date somehow");
+    const isTrue = checkCurrentUser(username, currentUser);
+    setIsCurrentUser(isTrue);
   });
-
-  const [commentDate, setCommentDate] = useState("");
-
-  function timeDiff(curr: any, prev: any) {
-    const ms_Min = 60 * 1000;
-    const ms_Hour = ms_Min * 60;
-    const ms_Day = ms_Hour * 24;
-    const ms_Mon = ms_Day * 30;
-    const ms_Yr = ms_Day * 365;
-    const diff = curr - prev;
-
-    const conditions = [
-      {
-        test: (d: number) => d < ms_Min,
-        result: (d: number) =>
-          `${Math.round(d / 1000)} second${
-            Math.round(d / 1000) === 1 ? "" : "s"
-          } ago`,
-      },
-      {
-        test: (d: number) => d < ms_Hour,
-        result: (d: number) =>
-          `${Math.round(d / ms_Min)} minute${
-            Math.round(d / ms_Min) === 1 ? "" : "s"
-          } ago`,
-      },
-      {
-        test: (d: number) => d < ms_Day,
-        result: (d: number) =>
-          `${Math.round(d / ms_Hour)} hour${
-            Math.round(d / ms_Hour) === 1 ? "" : "s"
-          } ago`,
-      },
-      {
-        test: (d: number) => d < ms_Mon,
-        result: (d: number) =>
-          `Around ${Math.round(d / ms_Day)} day${
-            Math.round(d / ms_Day) === 1 ? "" : "s"
-          } ago`,
-      },
-      {
-        test: (d: number) => d < ms_Yr,
-        result: (d: number) =>
-          `Around ${Math.round(d / ms_Mon)} month${
-            Math.round(d / ms_Mon) === 1 ? "" : "s"
-          } ago`,
-      },
-      {
-        test: (d: any) => true,
-        result: (d: number) =>
-          `Around ${Math.round(d / ms_Yr)} year${
-            Math.round(d / ms_Yr) === 1 ? "" : "s"
-          } ago`,
-      },
-    ];
-
-    for (const condition of conditions) {
-      if (condition.test(diff)) {
-        return condition.result(diff);
-      }
-    }
-  }
-
+  const [isCurrentUser, setIsCurrentUser] = useState(false);
+  const handleCommentDelete = async (commentId: string) => {
+    const body = {
+      id: commentId,
+    };
+    // console.log(postId);
+    await fetchJson("/api/deletecomment", {
+      method: "DELETE",
+      body: JSON.stringify(body),
+    });
+    return;
+  };
   return (
     <div className="py-4 px-6 bg-neutral-50 rounded-lg shadow-lg w-11/12 relative">
+      {onUserPage ? (
+        <>
+          <a href={`/post/${targetId}`}>See comment post</a>
+          <hr className="my-4 bg-neutral-200 text-neutral-200 border-neutral-200" />
+        </>
+      ) : null}
       <a href={`/user/${username}`} className={"w-fit"}>
         {username}
       </a>
+      {isCurrentUser && (
+        <button
+          className={
+            "absolute right-6 top-4 text-white bg-red-400 hover:bg-red-500 hover:p-2 transition-all rounded-lg p-1"
+          }
+          onClick={() => handleCommentDelete(id)}
+        >
+          delete
+        </button>
+      )}
       <div className={"w-full h-full relative"}>
         <hr className="my-4 bg-neutral-200 text-neutral-200 border-neutral-200" />
         <p className="text-neutral-900 text-lg">{content}</p>
         <hr className="my-4 bg-neutral-200 text-neutral-200 border-neutral-200" />
-        <p className={"text-neutral-900 text-sm"}>{commentDate}</p>
+        <p className={"text-neutral-900 text-sm"}>
+          <DateTime value={date} />
+        </p>
       </div>
     </div>
   );

@@ -13,6 +13,7 @@ export interface PostsOnFeed {
       username: string;
   };
     comments: {
+      id: string;
         content: string | null;
         postedDate: Date;
         user: {
@@ -33,8 +34,10 @@ export const createComment = async (data: InsertComment) => {
   const insertData = await db.insert(comments).values(data);
 }
 
-export const getPosts = async ():Promise<PostsOnFeed[]> => {
+export const getPosts = async (limit: number, offset: number):Promise<PostsOnFeed[]> => {
   const posts = await db.query.posts.findMany({
+    limit: limit,
+    offset: offset,
     orderBy: (posts, { desc }) => [desc(posts.postedDate)],
     with: {
       user: {
@@ -44,6 +47,7 @@ export const getPosts = async ():Promise<PostsOnFeed[]> => {
       },
       comments: {
         columns: {
+          id: true,
           content: true,
           postedDate: true
         },
@@ -51,6 +55,11 @@ export const getPosts = async ():Promise<PostsOnFeed[]> => {
           user: {
             columns: {
               username: true
+            }
+          },
+          post: {
+            columns: {
+              id: true
             }
           }
         }
@@ -66,6 +75,37 @@ export const getPosts = async ():Promise<PostsOnFeed[]> => {
   return posts;
 };
 
+export const deletePost = async (postId: string) => {
+  await db.delete(posts).where(eq(posts.id, postId));
+  await db.delete(comments).where(eq(comments.targetPostId, postId));
+  return;
+}
+
+export const deleteComment = async (commentId: string) => {
+  await db.delete(comments).where(eq(comments.id, commentId));
+  return;
+}
+
+export const getPostAuthorId = async (postId: string) => {
+  const author = await db.query.posts.findFirst({
+    where: eq(posts.id, postId),
+    columns: {
+      authorId: true
+    }
+  })
+  return author?.authorId;
+}
+
+export const getCommentAuthorId = async (commentId: string) => {
+  const author = await db.query.comments.findFirst({
+    where: eq(comments.id, commentId),
+    columns: {
+      authorId: true
+    }
+  })
+  return author?.authorId;
+}
+
 export const getSinglePost = async (postId: string):Promise<PostsOnFeed | undefined> => {
   return await db.query.posts.findFirst({
     where: eq(posts.id, postId),
@@ -78,6 +118,7 @@ export const getSinglePost = async (postId: string):Promise<PostsOnFeed | undefi
       comments: {
         orderBy: (comments, { desc }) => [desc(comments.postedDate)],
         columns: {
+          id: true,
           content: true,
           postedDate: true
         },
@@ -85,6 +126,11 @@ export const getSinglePost = async (postId: string):Promise<PostsOnFeed | undefi
           user: {
             columns: {
               username: true
+            }
+          },
+          post: {
+            columns: {
+              id: true
             }
           }
         }

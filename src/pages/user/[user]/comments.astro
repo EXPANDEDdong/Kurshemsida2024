@@ -1,0 +1,42 @@
+---
+import fetchJson from "@utils/fetchJson";
+import CommentsList from "@components/CommentsList";
+import { importJWK } from "jose";
+import { verifyToken } from "~/server/users";
+import Userpage from "@layouts/Userpage.astro";
+const { user } = Astro.params;
+
+const origin = Astro.url.origin;
+const body = {
+  username: user,
+};
+const userPage = await fetchJson(`${origin}/api/getuser`, {
+  method: "POST",
+  body: JSON.stringify(body),
+});
+if (!userPage?.username) {
+  return Astro.redirect("/404");
+}
+const authToken = Astro.cookies.get("authToken")?.value;
+if (!authToken) return Astro.redirect("/404");
+
+const secretKey = await importJWK({
+  kty: "oct",
+  k: import.meta.env.JWT_SECRET,
+  alg: "HS256",
+});
+const { payload } = await verifyToken(authToken, secretKey);
+if (!payload) return;
+const currentUser = payload.username;
+---
+
+<Userpage username={userPage.username} bio={userPage.description}>
+  <div class="w-full">
+    <CommentsList
+      comments={userPage.comments}
+      onUserPage={true}
+      currentUser={currentUser}
+      client:visible
+    />
+  </div>
+</Userpage>

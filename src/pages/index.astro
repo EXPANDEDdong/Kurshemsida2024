@@ -3,9 +3,25 @@ import Layout from "../layouts/Layout.astro";
 import PostForm from "@components/PostForm";
 import PostFeed from "@components/PostFeed";
 import fetchJson from "@utils/fetchJson";
+import TestFeed from "@components/TestFeed";
+import { importJWK } from "jose";
+import { verifyToken } from "~/server/users";
 const origin = Astro.url.origin;
-const result = await fetchJson(`${origin}/api/feed`);
-console.log(result);
+
+const authToken = Astro.cookies.get("authToken")?.value;
+if (!authToken) return;
+
+const secretKey = await importJWK({
+  kty: "oct",
+  k: import.meta.env.JWT_SECRET,
+  alg: "HS256",
+});
+
+const { payload } = await verifyToken(authToken, secretKey);
+if (!payload) return;
+
+const currentUser = payload.username;
+const result = await fetchJson(`${origin}/api/page?page=0`);
 ---
 
 <Layout title="Balls">
@@ -16,7 +32,7 @@ console.log(result);
       </div>
     </div>
     <div class="w-full h-screen overflow-x-clip overflow-y-scroll">
-      <PostFeed feed={result} client:load />
+      <TestFeed initialFeed={result} currentUser={currentUser} client:load />
     </div>
   </main>
 </Layout>

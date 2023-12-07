@@ -1,10 +1,14 @@
-import fetchJson from "@utils/fetchJson";
 import { useEffect, useState } from "preact/hooks";
-import type { PostsData } from "../server/users";
 import type { PostsOnFeed } from "~/server/posts";
 import Post from "./blocks/Post";
 
-export default function PostFeed({ feed }: { feed: PostsOnFeed[] }) {
+export default function PostFeed({
+  feed,
+  currentUser,
+}: {
+  feed: PostsOnFeed[];
+  currentUser: string;
+}) {
   useEffect(() => {
     getPosts(feed);
   }, []);
@@ -23,6 +27,7 @@ export default function PostFeed({ feed }: { feed: PostsOnFeed[] }) {
           title={post.title}
           content={post.content}
           date={post.postedDate}
+          currentUser={currentUser}
           onFeed={true}
         />
       ))}

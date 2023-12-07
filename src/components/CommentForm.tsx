@@ -1,14 +1,20 @@
 import fetchJson from "@utils/fetchJson";
 import { useState } from "preact/hooks";
 
-export default function CommentForm({ postId }: { postId: string }) {
+export default function CommentForm({
+  postId,
+  onNewComment,
+}: {
+  postId: string;
+  onNewComment: (comment: { content: string; targetId: string }) => void;
+}) {
   const [content, setContent] = useState("");
 
-  const handleInput = (e) => {
+  const handleInput = (e: any) => {
     setContent(e.target.value);
   };
 
-  const handleSubmit = async (event: SubmitEvent) => {
+  const handleSubmit = async (event: any) => {
     event.preventDefault();
     const body = {
       content: content,
@@ -18,7 +24,7 @@ export default function CommentForm({ postId }: { postId: string }) {
       method: "POST",
       body: JSON.stringify(body),
     });
-    window.location.reload();
+    onNewComment(result);
   };
 
   return (

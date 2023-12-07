@@ -4,6 +4,8 @@ import fetchJson from "@utils/fetchJson";
 import PostFeed from "@components/PostFeed";
 import Post from "@components/blocks/Post";
 import CommentsList from "@components/CommentsList";
+import { importJWK } from "jose";
+import { verifyToken } from "~/server/users";
 const { post } = Astro.params;
 const id = String(post);
 const body = {
@@ -17,9 +19,20 @@ const postPage = await fetchJson(`${origin}/api/singlePost`, {
 if (!postPage) {
   return Astro.redirect("/404");
 }
+const authToken = Astro.cookies.get("authToken")?.value;
+if (!authToken) return;
+
+const secretKey = await importJWK({
+  kty: "oct",
+  k: import.meta.env.JWT_SECRET,
+  alg: "HS256",
+});
+const { payload } = await verifyToken(authToken, secretKey);
+if (!payload) return;
+const currentUser = payload.username;
 ---
 
-<Layout title={`Post` || "User not found"}>
+<Layout title={`${postPage.title}` || "User not found"}>
   <div class="w-full">
     <div class="w-full bg-neutral-50 shadow-xl mb-8 p-4 grid">
       {
@@ -30,12 +43,18 @@ if (!postPage) {
             title={postPage.title}
             content={postPage.content}
             date={postPage.postedDate}
+            currentUser={currentUser}
             onFeed={false}
             client:load
           />
         )
       }
     </div>
-    <CommentsList comments={postPage.comments} client:load />
+    <CommentsList
+      onUserPage={false}
+      currentUser={currentUser}
+      comments={postPage.comments}
+      client:load
+    />
   </div>
 </Layout>

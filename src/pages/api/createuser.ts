@@ -1,12 +1,15 @@
-import { createUser, generateToken, verifyToken, type JwtPayload } from "~/server/users";
+import { createUser, generateToken, type JwtPayload } from "~/server/users";
 import type { APIRoute } from "astro";
+import { importJWK } from "jose";
 
 function isValidUsername(username: string) {
-  // Regular expression to match valid characters (alphanumeric and both uppercase & lowercase)
-  // with a length between 5 and 36 characters.
   const regex = /^[A-Za-z0-9]{4,36}$/;
-
   return regex.test(username);
+}
+
+function isValidEmail(email: string) {
+  const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return regex.test(email);
 }
 
 export const POST: APIRoute = async ({ cookies, request }) => {
@@ -14,43 +17,47 @@ export const POST: APIRoute = async ({ cookies, request }) => {
   const email = String(body.email);
   const username = String(body.username);
   const password = body.password;
-  const isValid = isValidUsername(username);
-  if (!isValid) {
+
+  if (!isValidUsername(username) || !isValidEmail(email)) {
     return new Response(JSON.stringify({
       success: false,
-      message:
-        "Invalid username, the username should be 4 - 36 characters only containing letters and numbers.",
-    }), {
-      status: 400,
-      
-    });
+      message: "Invalid username or email format.",
+    }), { status: 400 });
+  }
+
+  // Additional password validation can be added here
+  if (!password || password.length < 8) {
+    return new Response(JSON.stringify({
+      success: false,
+      message: "Password too short.",
+    }), { status: 400 });
   }
 
   const { user, message } = await createUser({ email, username, password });
   if (!user) {
-    return new Response (JSON.stringify(message), {
-      status: 409,
-      
-    });
+    return new Response(JSON.stringify({ success: false, message }), { status: 409 });
   }
 
   const payload: JwtPayload = {
-    sub: JSON.stringify(user?.id),
-    exp: Math.floor(Date.now() / 1000) + 60 * 60,
+    sub: JSON.stringify(user.id),
+    exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 7,
     iat: Math.floor(Date.now() / 1000),
-    customData: {
-      username: username,
-    },
+    customData: { username: user.username },
   };
-  const token = await generateToken(payload);
+
+  const secretKey = await importJWK({
+    kty: "oct",
+    k: import.meta.env.JWT_SECRET,
+    alg: "HS256",
+  });
+
+  const token = await generateToken(payload, secretKey);
   cookies.set("authToken", token, {
     httpOnly: true,
     secure: true,
     path: "/",
     maxAge: 60 * 60 * 24 * 7
   });
-  return new Response(JSON.stringify(message), {
-    status: 200, 
-    });
-};
 
+  return new Response(JSON.stringify({ success: true, message }), { status: 200 });
+};

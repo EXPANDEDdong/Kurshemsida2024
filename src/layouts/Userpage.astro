@@ -1,0 +1,65 @@
+---
+import { ViewTransitions } from "astro:transitions";
+interface Props {
+  username: string;
+  bio: string;
+}
+const origin = Astro.url.origin;
+const { username, bio } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en" class="w-screen h-screen" transition:animate="none">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="description" content="Astro description" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <ViewTransitions />
+    <title>{username}</title>
+  </head>
+  <body class="w-full h-full">
+    <div>
+      <div class="w-full bg-neutral-50 shadow-xl mb-8 flex flex-col gap-4 p-4">
+        <h1 class="text-2xl font-bold">{username}</h1>
+        <p class="text-lg">{bio}</p>
+      </div>
+      <div>
+        <a href={`${origin}/user/${username}/posts`}>posts</a>
+        <a href={`${origin}/user/${username}/comments`}>comments</a>
+      </div>
+      <main class="w-full" transition:animate="slide">
+        <slot />
+      </main>
+    </div>
+    <style is:global>
+      :root {
+        --accent: 136, 58, 234;
+        --accent-light: 224, 204, 250;
+        --accent-dark: 49, 10, 101;
+        --accent-gradient: linear-gradient(
+          45deg,
+          rgb(var(--accent)),
+          rgb(var(--accent-light)) 30%,
+          white 60%
+        );
+      }
+      html {
+        font-family: system-ui, sans-serif;
+        background-size: 224px;
+      }
+      code {
+        font-family:
+          Menlo,
+          Monaco,
+          Lucida Console,
+          Liberation Mono,
+          DejaVu Sans Mono,
+          Bitstream Vera Sans Mono,
+          Courier New,
+          monospace;
+      }
+    </style>
+  </body>
+</html>
