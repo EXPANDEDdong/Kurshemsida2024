@@ -31,7 +31,7 @@ export default function CommentForm({
     <div className={"w-full"}>
       <form onSubmit={handleSubmit}>
         <label
-          className="block text-gray-700 text-sm font-bold mb-1"
+          className="block text-gray-400 text-sm font-bold mb-1"
           htmlFor="comment"
         >
           Comment:
@@ -41,16 +41,13 @@ export default function CommentForm({
             <textarea
               value={content}
               onInput={handleInput}
-              className="w-full bg-neutral-50 resize-none border shadow-sm border-neutral-400 rounded-lg h-full text-neutral-900 focus:outline-none focus:border focus:border-neutral-500 px-2"
+              className="w-full textarea textarea-bordered"
               placeholder={"Comment here."}
               required
             />
           </div>
           <div className="grow-0 h-full self-center">
-            <button
-              type="submit"
-              className="p-2 text-white h-full w-24 text-center bg-blue-500 rounded-lg shadow-lg hover:bg-blue-400 active:bg-blue-600 active:shadow-sm active:w-[5.5rem] transition-all"
-            >
+            <button type="submit" className="btn btn-primary">
               Submit
             </button>
           </div>

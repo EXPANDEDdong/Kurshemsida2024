@@ -1,0 +1,36 @@
+---
+import Avatar from "./blocks/Avatar";
+import { GET } from "~/pages/api/loggedinuser";
+
+const response = await GET(Astro);
+if (!(response instanceof Response)) return Astro.redirect("/404");
+const { username, role } = await response.json();
+const origin = Astro.url.origin;
+---
+
+<header class="navbar bg-base-100">
+  <div class="flex-1">
+    <a href=`${origin}/` class="btn btn-ghost text-xl">Kvitter</a>
+  </div>
+  <div class="flex-none">
+    <div class="dropdown dropdown-end dropdown-hover">
+      <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
+        <div class="rounded-full grid">
+          <Avatar />
+        </div>
+      </div>
+      <ul class="menu dropdown-content bg-base-100 rounded-box w-52 z-30">
+        <li><a href={`${origin}/user/${username}`}>Profile</a></li>
+        {
+          role === "admin" && (
+            <li>
+              <a href={`${origin}/admin`}>Admin</a>
+            </li>
+          )
+        }
+        <li><a href={`${origin}/settings`}>Settings</a></li>
+        <li><a href="">Log out</a></li>
+      </ul>
+    </div>
+  </div>
+</header>

@@ -99,7 +99,7 @@ export default function TestFeed({
   }, []);
 
   return (
-    <div className="flex flex-col gap-4 items-center">
+    <div className="flex flex-col gap-4 items-center overflow z-40">
       {items.map((post, index) => (
         <Post
           key={index}

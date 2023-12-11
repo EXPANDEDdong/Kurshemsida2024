@@ -18,7 +18,11 @@ export const GET: APIRoute = async ({ cookies }) => {
   const { user } = await getUser(payload.username);
   if (!user) return new Response(JSON.stringify("no"), { status: 401 });
 
-  const body = { username: user.username, description: user.description };
-  console.log(body)
-  return new Response(JSON.stringify(payload.username));
+  const body = {
+    username: user.username,
+    description: user.description,
+    role: user.permissions.role,
+  };
+  console.log(body);
+  return new Response(JSON.stringify(body));
 };

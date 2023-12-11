@@ -37,13 +37,13 @@ export default function PostForm() {
   };
 
   return (
-    <div className="py-4 px-6 w-full bg-neutral-50 rounded-lg shadow-lg">
-      <h4 className="text-xl text-neutral-900 font-semibold">Make post</h4>
+    <div className="py-4 px-6 w-full bg-base-100 rounded-lg shadow-lg">
+      <h4 className="text-xl text-neutral-100 font-semibold">Make post</h4>
       <form onSubmit={handleSubmit}>
         <div className="flex flex-col items-center w-full gap-3 my-2">
           <div className="w-11/12">
             <label
-              className="block text-gray-700 text-sm font-bold mb-1"
+              className="block text-gray-400 text-sm font-bold mb-1"
               htmlFor="title"
             >
               Title:
@@ -53,14 +53,14 @@ export default function PostForm() {
               id={"title"}
               value={title}
               onInput={handleInputTitle}
-              className="w-full bg-neutral-50 border shadow-sm border-neutral-400 rounded-lg h-10 text-neutral-900 focus:outline-none focus:border focus:border-neutral-500 px-2"
+              className="w-full input input-bordered"
               placeholder={"Post title here."}
               required
             />
           </div>
           <div className="w-11/12">
             <label
-              className="block text-gray-700 text-sm font-bold mb-1"
+              className="block text-gray-400 text-sm font-bold mb-1"
               htmlFor="content"
             >
               Content:
@@ -69,18 +69,15 @@ export default function PostForm() {
               id={"content"}
               value={content}
               onInput={handleInputContent}
-              className="w-full bg-neutral-50 resize-none border shadow-sm border-neutral-400 rounded-lg h-24 text-neutral-900 focus:outline-none focus:border focus:border-neutral-500 px-2"
+              className="w-full textarea textarea-bordered resize-none"
               placeholder={"Post content here."}
               required
             />
           </div>
         </div>
-        <hr className="my-6 bg-neutral-200 text-neutral-200 border-neutral-200" />
+        <div className="divider"></div>
         <div className="flex justify-center w-full">
-          <button
-            type="submit"
-            className="p-2 text-white h-12 w-24 text-center bg-blue-500 rounded-lg shadow-lg hover:bg-blue-400 active:bg-blue-600 active:shadow-sm active:w-[5.5rem] transition-all"
-          >
+          <button type="submit" className="btn btn-primary">
             Submit
           </button>
         </div>

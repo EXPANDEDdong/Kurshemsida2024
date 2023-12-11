@@ -25,7 +25,6 @@ export const POST: APIRoute = async ({ cookies, request }) => {
     }), { status: 400 });
   }
 
-  // Additional password validation can be added here
   if (!password || password.length < 8) {
     return new Response(JSON.stringify({
       success: false,

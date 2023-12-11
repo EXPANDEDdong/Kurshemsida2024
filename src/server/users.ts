@@ -1,5 +1,11 @@
 import crypto from "crypto";
-import { comments, posts, postsRelations, users } from "@drizzle/schema/posts";
+import {
+  comments,
+  posts,
+  postsRelations,
+  userPermissions,
+  users,
+} from "@drizzle/schema/posts";
 import db, { type InsertUser, type SelectUser } from "~/server/db";
 import { eq } from "drizzle-orm";
 import {
@@ -51,7 +57,10 @@ const encryptPassword = async (password: string): Promise<string> => {
 
 // =============================================================================
 
-export const generateToken = async (payload: JwtPayload, secretKey: KeyLike | Uint8Array): Promise<string> => {
+export const generateToken = async (
+  payload: JwtPayload,
+  secretKey: KeyLike | Uint8Array
+): Promise<string> => {
   try {
     const token: JWTPayload = { username: `${payload.customData.username}` };
     return await new SignJWT(token)
@@ -107,23 +116,46 @@ export const createUser = async (
         password: encryptedPassword,
       });
 
-      return await trx
-        .select()
-        .from(users)
-        .where(eq(users.id, insertData.insertId));
-    });
+      const newUserData = await trx.query.users.findFirst({
+        where: eq(users.username, data.username),
+      });
+      if (!newUserData) return null;
+      const insertPerms = await trx
+        .insert(userPermissions)
+        .values({ userId: newUserData.id });
 
-    return { success: true, user: newUser[0], message: "User created successfully" };
+      return await trx.select().from(users).where(eq(users.id, newUserData.id));
+    });
+    if (!newUser) {
+      return {
+        success: false,
+        user: null,
+        message: "Error creating user",
+      };
+    }
+    return {
+      success: true,
+      user: newUser[0],
+      message: "User created successfully",
+    };
   } catch (error) {
     // Early exit if the error is not an instance of Error
-  if (!(error instanceof Error)) {
-    console.error("An unknown error occurred"); // Log a generic error message
-    return { success: false, user: null, message: "An unknown error occurred during user creation" };
-  }
-  
-  // Handle the Error instance
-  console.error("Error creating user:", error.message); // Log the error message
-  return { success: false, user: null, message: "Error creating user: " + error.message };
+    if (!(error instanceof Error)) {
+      console.error("An unknown error occurred"); // Log a generic error message
+      return {
+        success: false,
+        user: null,
+        message: "An unknown error occurred during user creation",
+      };
+    }
+
+    // Handle the Error instance
+    console.error("Error creating user:", error.message); // Log the error message
+    return {
+      success: false,
+      user: null,
+      message: "Error creating user: " + error.message,
+    };
   }
 };
 
@@ -169,6 +201,9 @@ export interface UserData {
   description: string | null;
   posts: PostsData[];
   comments: CommentsData[];
+  permissions: {
+    role: "user" | "admin";
+  };
 }
 
 const verifyPassword = async (
@@ -211,6 +246,7 @@ export const getUser = async (
 ): Promise<{ message: string; user: UserData | undefined | null }> => {
   // Retrieve user from database along with
   // all posts and comments made by that user and the comments on those posts
+
   const user = await db.query.users.findFirst({
     where: eq(users.username, username),
     columns: {
@@ -218,6 +254,11 @@ export const getUser = async (
       description: true,
     },
     with: {
+      permissions: {
+        columns: {
+          role: true,
+        },
+      },
       posts: {
         orderBy: (posts, { desc }) => [desc(posts.postedDate)],
         columns: {
@@ -292,7 +333,6 @@ export const isUserValid = async (
   email: string,
   password: string
 ): Promise<{ message: string; isValid: boolean }> => {
-
   const user = await db.query.users.findFirst({
     where: eq(users.id, userId),
     columns: {
@@ -300,7 +340,7 @@ export const isUserValid = async (
       password: true,
     },
   });
-  
+
   if (!user) return { message: "user doesnt exist", isValid: false };
 
   const passwordValid = await verifyPassword(user.password, password);
@@ -312,7 +352,6 @@ export const isUserValid = async (
     return { message: "user is valid", isValid: true };
   }
   return { message: "user not valid", isValid: false };
-  
 };
 
 export const deleteUser = async (userId: string): Promise<boolean> => {
@@ -343,11 +382,10 @@ export const deleteUser = async (userId: string): Promise<boolean> => {
 
     return true; // Indicates successful deletion
   } catch (error) {
-    console.error('Error deleting user:', error); // Improved error logging
+    console.error("Error deleting user:", error); // Improved error logging
     return false; // Indicates an error occurred
   }
 };
-
 
 export const updateUser = async (
   id: string,
@@ -377,7 +415,7 @@ export const updateUser = async (
         throw new Error("User not found after update");
       }
 
-      return updatedUser.username; 
+      return updatedUser.username;
     });
   } catch (error) {
     console.error("Update user error:", error);
@@ -386,3 +424,41 @@ export const updateUser = async (
 };
 
 // ===============================================================================
+
+export const getAllUsers = async () => {
+  return await db.query.users.findMany({
+    columns: {
+      id: true,
+      email: true,
+      username: true,
+      description: true,
+    },
+    with: {
+      permissions: {
+        columns: {
+          role: true,
+        },
+      },
+    },
+  });
+};
+
+export const isAdmin = async (userId: string | undefined): Promise<boolean> => {
+  if (!userId) return false;
+
+  const user = await db.query.users.findFirst({
+    where: eq(users.id, userId),
+    with: {
+      permissions: {
+        columns: {
+          role: true,
+        },
+      },
+    },
+    columns: {},
+  });
+  if (!user || user.permissions.role !== "admin") {
+    return false;
+  }
+  return true;
+};

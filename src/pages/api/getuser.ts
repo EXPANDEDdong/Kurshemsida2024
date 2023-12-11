@@ -7,15 +7,12 @@ export const POST: APIRoute = async ({ request }) => {
   const body = await request.json();
   const username = body.username;
   const { user } = await getUser(username);
-  const name = user?.username;
-  const description = user?.description;
-  const posts = user?.posts;
-  const comments = user?.comments;
   const userBody = {
-    username: name,
-    description: description,
-    posts: posts,
-    comments: comments,
+    username: user?.username,
+    description: user?.description,
+    role: user?.permissions.role,
+    posts: user?.posts,
+    comments: user?.comments,
   };
   return new Response(JSON.stringify(userBody), {
     status: 200,

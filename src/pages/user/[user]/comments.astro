@@ -30,7 +30,11 @@ if (!payload) return;
 const currentUser = payload.username;
 ---
 
-<Userpage username={userPage.username} bio={userPage.description}>
+<Userpage
+  username={userPage.username}
+  bio={userPage.description}
+  role={userPage.role}
+>
   <div class="w-full">
     <CommentsList
       comments={userPage.comments}

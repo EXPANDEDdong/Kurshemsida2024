@@ -43,15 +43,13 @@ export default function Post({
   };
 
   return (
-    <div className="py-4 px-6 bg-neutral-50 rounded-lg shadow-lg w-11/12 relative justify-self-center">
+    <div className="py-4 px-6 bg-base-100 rounded-lg shadow-lg w-full relative justify-self-center z-50">
       <a href={`/user/${username}`} className={"w-fit"}>
         {username}
       </a>
       {isCurrentUser && (
         <button
-          className={
-            "absolute right-6 top-4 text-white bg-red-400 hover:bg-red-500 hover:p-2 transition-all rounded-lg p-1"
-          }
+          className={"absolute right-6 top-4 btn btn-error"}
           onClick={() => handlePostDelete(id)}
         >
           delete
@@ -61,16 +59,16 @@ export default function Post({
         {onFeed && (
           <a href={`/post/${id}`} className={"absolute w-full h-full"}></a>
         )}
-        <h3 className="text-2xl text-neutral-900 font-semibold">{title}</h3>
-        <hr className="my-4 bg-neutral-200 text-neutral-200 border-neutral-200" />
-        <p className="text-neutral-900 text-lg">{content}</p>
-        <hr className="my-4 bg-neutral-200 text-neutral-200 border-neutral-200" />
+        <h3 className="text-2xl font-semibold">{title}</h3>
+        <div className={"divider"}></div>
+        <p className="text-lg">{content}</p>
+        <div className={"divider"}></div>
         <p>
           <DateTime value={date} />
         </p>
         {!onFeed && (
           <>
-            <hr className="my-4 bg-neutral-200 text-neutral-200 border-neutral-200" />
+            <div className={"divider"}></div>
             <CommentForm
               postId={id}
               onNewComment={(result) => {

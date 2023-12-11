@@ -1,0 +1,16 @@
+---
+import { GET } from "~/pages/api/loggedinuser";
+
+const response = await GET(Astro);
+if (!(response instanceof Response)) return Astro.redirect("/404");
+const data = await response.json();
+---
+
+<div class="w-full h-full flex flex-col">
+  <div class="bg-base-100 m-1 rounded-lg p-2">
+    <h1 class="text-xl font-medium">{data.username}</h1>
+    <div class="divider"></div>
+    <p class="text-lg">{data.description}</p>
+  </div>
+  <div class="flex flex-col"></div>
+</div>

@@ -1,5 +1,6 @@
 import { loginUser, type JwtPayload, generateToken } from "~/server/users";
 import type { APIRoute } from "astro";
+import { importJWK } from "jose";
 
 export const POST: APIRoute = async ({ cookies, request }) => {
   const body = await request.json();
@@ -20,13 +21,25 @@ export const POST: APIRoute = async ({ cookies, request }) => {
       username: username,
     },
   };
-  const token = await generateToken(payload);
+
+  const secretKey = await importJWK({
+    kty: "oct",
+    k: import.meta.env.JWT_SECRET,
+    alg: "HS256",
+  });
+
+  const token = await generateToken(payload, secretKey);
+
   cookies.set("authToken", token, {
     httpOnly: true,
     secure: true,
+    sameSite: "lax",
     path: "/",
-    maxAge: 60 * 60 * 24 * 7
+    maxAge: 60 * 60 * 24 * 7,
   });
+
+  console.log(request.url);
+  console.log(cookies.get("authToken")?.value);
   return new Response(JSON.stringify(message), {
     status: 200,
   });
