@@ -28,7 +28,7 @@ export default function CommentForm({
   };
 
   return (
-    <div className={"w-full"}>
+    <div className={"w-full mt-6"}>
       <form onSubmit={handleSubmit}>
         <label
           className="block text-gray-400 text-sm font-bold mb-1"
@@ -41,13 +41,13 @@ export default function CommentForm({
             <textarea
               value={content}
               onInput={handleInput}
-              className="w-full textarea textarea-bordered"
+              className="w-full textarea textarea-bordered resize-none h-full"
               placeholder={"Comment here."}
               required
             />
           </div>
           <div className="grow-0 h-full self-center">
-            <button type="submit" className="btn btn-primary">
+            <button type="submit" className="btn btn-primary h-full">
               Submit
             </button>
           </div>

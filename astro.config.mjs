@@ -9,5 +9,6 @@ import preact from "@astrojs/preact";
 export default defineConfig({
   integrations: [tailwind(), sitemap(), preact()],
   output: "server",
-  adapter: vercel()
+  adapter: vercel(),
+  prefetch: true
 });

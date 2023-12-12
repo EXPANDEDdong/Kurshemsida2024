@@ -40,6 +40,11 @@ const currentUser = payload.username;
 >
   <div class="w-full">
     <!-- <DeleteUser client:load /> -->
-    <PostFeed feed={userPage.posts} currentUser={currentUser} client:visible />
+    <PostFeed
+      role={userPage.role}
+      feed={userPage.posts}
+      currentUser={currentUser}
+      client:visible
+    />
   </div>
 </Userpage>

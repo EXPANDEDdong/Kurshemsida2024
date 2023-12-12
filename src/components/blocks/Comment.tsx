@@ -37,31 +37,30 @@ export default function Comment({
     return;
   };
   return (
-    <div className="py-4 px-6 bg-neutral-50 rounded-lg shadow-lg w-11/12 relative">
+    <div className="py-4 px-6 bg-base-100 rounded-lg shadow-lg w-11/12 relative flex flex-col">
       {onUserPage ? (
         <>
           <a href={`/post/${targetId}`}>See comment post</a>
-          <hr className="my-4 bg-neutral-200 text-neutral-200 border-neutral-200" />
+          {/* <div className={"divider"}></div> */}
         </>
       ) : null}
-      <a href={`/user/${username}`} className={"w-fit"}>
+      <a href={`/user/${username}`} className={"w-fit text-xl font-medium"}>
         {username}
       </a>
       {isCurrentUser && (
         <button
-          className={
-            "absolute right-6 top-4 text-white bg-red-400 hover:bg-red-500 hover:p-2 transition-all rounded-lg p-1"
-          }
+          className={"absolute right-6 top-4 btn btn-error"}
           onClick={() => handleCommentDelete(id)}
         >
           delete
         </button>
       )}
       <div className={"w-full h-full relative"}>
-        <hr className="my-4 bg-neutral-200 text-neutral-200 border-neutral-200" />
-        <p className="text-neutral-900 text-lg">{content}</p>
-        <hr className="my-4 bg-neutral-200 text-neutral-200 border-neutral-200" />
-        <p className={"text-neutral-900 text-sm"}>
+        <div className={"divider"}></div>
+        <p className="text-lg">{content}</p>
+        <div className={"divider"}></div>
+
+        <p className={"text-sm"}>
           <DateTime value={date} />
         </p>
       </div>

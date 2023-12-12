@@ -1,22 +1,14 @@
 import crypto from "crypto";
-import {
-  comments,
-  posts,
-  postsRelations,
-  userPermissions,
-  users,
-} from "@drizzle/schema/posts";
+import { comments, posts, userPermissions, users } from "@drizzle/schema/posts";
 import db, { type InsertUser, type SelectUser } from "~/server/db";
 import { eq } from "drizzle-orm";
 import {
   SignJWT,
   jwtVerify,
-  importJWK,
   type JWTPayload,
   errors,
   type KeyLike,
 } from "jose";
-import type { PostsOnFeed } from "./posts";
 
 interface CustomData {
   username: string;

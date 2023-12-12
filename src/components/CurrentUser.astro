@@ -1,16 +1,35 @@
 ---
 import { GET } from "~/pages/api/loggedinuser";
+const origin = Astro.url.origin;
 
 const response = await GET(Astro);
 if (!(response instanceof Response)) return Astro.redirect("/404");
 const data = await response.json();
 ---
 
-<div class="w-full h-full flex flex-col">
-  <div class="bg-base-100 m-1 rounded-lg p-2">
-    <h1 class="text-xl font-medium">{data.username}</h1>
+<div class="w-full h-full flex flex-col overflow-hidden p-2">
+  <div class="bg-base-100 rounded-lg py-6 px-4 gap-2">
+    <div class="flex flex-row gap-4 items-center">
+      <h1 class="text-xl font-medium">{data.username}</h1>
+      <div
+        class={data.role
+          ? /* if user is admin */ `badge badge-warning`
+          : /* if user is normal user */ `badge badge-info`}
+      >
+        {data.role}
+      </div>
+    </div>
     <div class="divider"></div>
-    <p class="text-lg">{data.description}</p>
+    <p class="text-lg h-24">{data.description}</p>
+    <div class="divider"></div>
+    <ul class="flex flex-col gap-1">
+      <li>Posts: {data.posts}</li>
+      <li>Comments: {data.comments}</li>
+    </ul>
   </div>
-  <div class="flex flex-col"></div>
+  <div class="flex flex-col gap-4 pt-8 flex-grow-0">
+    <a href=`${origin}/user/${data.username}` class="btn btn-block">Profile</a>
+    <a href="" class="btn btn-block">Settings</a>
+    <a href="" class="btn btn-block btn-error btn-outline">Log Out</a>
+  </div>
 </div>

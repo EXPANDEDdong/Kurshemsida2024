@@ -25,7 +25,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
 
   const authToken = context.cookies.get("authToken")?.value;
   if (!authToken) {
-    return context.redirect("/404");
+    return context.redirect("/login");
   }
 
   const secretKey = await importJWK({
@@ -59,5 +59,5 @@ export const onRequest = defineMiddleware(async (context, next) => {
     return new Response(JSON.stringify({ error: message }), { status: 401 });
   }
 
-  return context.redirect("/404");
+  return context.redirect("/login");
 });

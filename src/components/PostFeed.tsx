@@ -1,12 +1,15 @@
 import { useEffect, useState } from "preact/hooks";
 import type { PostsOnFeed } from "~/server/posts";
 import Post from "./blocks/Post";
+import type { userRole } from "./blocks/User";
 
 export default function PostFeed({
   feed,
+  role,
   currentUser,
 }: {
   feed: PostsOnFeed[];
+  role: userRole;
   currentUser: string;
 }) {
   useEffect(() => {
@@ -24,6 +27,7 @@ export default function PostFeed({
           key={index}
           id={post.id}
           username={post.user.username}
+          role={role}
           title={post.title}
           content={post.content}
           date={post.postedDate}

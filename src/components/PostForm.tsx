@@ -37,7 +37,7 @@ export default function PostForm() {
   };
 
   return (
-    <div className="py-4 px-6 w-full bg-base-100 rounded-lg shadow-lg">
+    <div className="py-4 px-6 w-full h-full bg-base-100 rounded-lg shadow-lg">
       <h4 className="text-xl text-neutral-100 font-semibold">Make post</h4>
       <form onSubmit={handleSubmit}>
         <div className="flex flex-col items-center w-full gap-3 my-2">
@@ -77,7 +77,7 @@ export default function PostForm() {
         </div>
         <div className="divider"></div>
         <div className="flex justify-center w-full">
-          <button type="submit" className="btn btn-primary">
+          <button type="submit" className="btn btn-secondary btn-block">
             Submit
           </button>
         </div>

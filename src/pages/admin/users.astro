@@ -8,11 +8,13 @@ const users = await getAllUsers();
 <Layout title="Admin">
   <div class="w-full h-full">
     <div class="grid w-full h-full">
-      <table class="table table-zebra table-xs h-fit w-11/12 border-b-0">
+      <table
+        class="table table-zebra h-fit w-11/12 justify-self-center border border-base-200"
+      >
         <thead>
           <tr class="text-xl text-neutral-50">
-            <th>Email</th>
             <th>ID</th>
+            <th>Email</th>
             <th>Username</th>
             <th>Description</th>
             <th>Role</th>
@@ -29,7 +31,17 @@ const users = await getAllUsers();
                   <td>{user.email}</td>
                   <td>{user.username}</td>
                   <td>{user.description}</td>
-                  <td>{role}</td>
+                  <td>
+                    <div
+                      class={
+                        role === "admin"
+                          ? `badge badge-warning`
+                          : `badge badge-info`
+                      }
+                    >
+                      {role}
+                    </div>
+                  </td>
                 </tr>
               );
             })

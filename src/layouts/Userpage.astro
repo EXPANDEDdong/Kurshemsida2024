@@ -1,7 +1,10 @@
 ---
 import BottomNav from "@components/BottomNav";
 import Navbar from "@components/Navbar.astro";
+import HideOnMobile from "@components/blocks/HideOnMobile";
+import SideMenuWrapper from "@components/SideMenuWrapper.astro";
 import { ViewTransitions, slide } from "astro:transitions";
+import BottomNavWrapper from "@components/BottomNavWrapper.astro";
 interface Props {
   username: string;
   bio: string;
@@ -13,11 +16,7 @@ const { username, bio, role } = Astro.props;
 ---
 
 <!doctype html>
-<html
-  lang="en"
-  class="w-screen h-screen bg-base-300 overflow-hidden"
-  transition:animate="none"
->
+<html lang="en" class="w-screen h-screen bg-base-300" transition:persist>
   <head>
     <meta charset="UTF-8" />
     <meta name="description" content="Astro description" />
@@ -27,38 +26,63 @@ const { username, bio, role } = Astro.props;
     <ViewTransitions />
     <title>{username}</title>
   </head>
-  <body class="w-full h-full bg-base-300">
+  <body class="w-full h-full bg-base-300 fixed">
     <Navbar />
-    <div class="w-full">
-      <div
-        class="bg-base-100 shadow-xl rounded-lg m-2 mb-8 flex flex-col gap-4 p-4"
-      >
-        <h1 class="text-2xl font-bold">{username}</h1>
-        {role === "admin" && <div class="badge badge-warning">Admin</div>}
-        <p class="text-lg">{bio}</p>
-      </div>
-      <div class="w-full flex justify-center">
-        <div role="tablist" class="tabs tabs-boxed w-11/12 mb-8">
-          <a
-            href={`${origin}/user/${username}/posts`}
-            class={url === `/user/${username}/posts` ? `tab tab-active` : `tab`}
-          >
-            Posts
-          </a>
-          <a
-            href={`${origin}/user/${username}/comments`}
-            class={url === `/user/${username}/comments`
-              ? `tab tab-active`
-              : `tab`}
-          >
-            Comments
-          </a>
+    <div class="w-full flex flex-row h-full">
+      <div class="w-full">
+        <div
+          class="bg-base-100 shadow-xl rounded-lg m-2 mb-8 flex flex-col gap-4 p-4"
+        >
+          <h1 class="text-2xl font-bold">{username}</h1>
+          {role === "admin" && <div class="badge badge-warning">Admin</div>}
+          <p class="text-lg">{bio}</p>
         </div>
+        <div class="w-full flex justify-center">
+          <div
+            role="tablist"
+            class="tabs tabs-boxed w-11/12 mb-8"
+            transition:animate="fade"
+          >
+            <a
+              data-astro-prefetch
+              href={`${origin}/user/${username}/posts`}
+              class={url === `/user/${username}/posts`
+                ? `tab tab-active !bg-secondary !text-secondary-content`
+                : `tab`}
+            >
+              Posts
+            </a>
+            <a
+              data-astro-prefetch
+              href={`${origin}/user/${username}/comments`}
+              class={url === `/user/${username}/comments`
+                ? `tab tab-active !bg-secondary !text-secondary-content`
+                : `tab`}
+            >
+              Comments
+            </a>
+          </div>
+        </div>
+        <main
+          class="w-full h-full overflow-x-clip overflow-y-auto px-2 pt-2 z-40 no-scrollbars flex-grow"
+          transition:animate="fade"
+        >
+          <slot />
+        </main>
       </div>
-      <main class="w-full" transition:animate="fade">
-        <slot />
-      </main>
+      <HideOnMobile client:only="preact" transition:name="side-menu">
+        <div class="divider-horizontal bg-base-200 overflow-y-clip"></div>
+        <div class="w-fit h-full px-2 flex-grow-0">
+          <SideMenuWrapper />
+          <!-- <SideMenu client:only="preact" /> -->
+          <!-- <div class="flex flex-col pr-2 py-2 items-center h-full">
+          <PostForm client:visible />
+        </div> -->
+        </div>
+      </HideOnMobile>
     </div>
-    <BottomNav client:only="preact" />
+    <footer class="relative z-50" transition:persist>
+      <BottomNavWrapper transition:name="btm-menu" />
+    </footer>
   </body>
 </html>

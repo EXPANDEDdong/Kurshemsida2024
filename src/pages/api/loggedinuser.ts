@@ -22,7 +22,9 @@ export const GET: APIRoute = async ({ cookies }) => {
     username: user.username,
     description: user.description,
     role: user.permissions.role,
+    posts: user?.posts.length,
+    comments: user?.comments.length,
   };
-  console.log(body);
+
   return new Response(JSON.stringify(body));
 };

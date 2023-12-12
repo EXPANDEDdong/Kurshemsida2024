@@ -1,9 +1,15 @@
 import { useEffect, useState } from "preact/hooks";
-import { Newspaper } from "lucide-preact";
+import { Home, Search, User } from "lucide-preact";
 
-export default function Test() {
+export default function BottomNav({
+  path,
+  user,
+}: {
+  path: string;
+  user: string;
+}) {
   const [width, setWidth] = useState(window.innerWidth);
-  const breakpoint = 800;
+  const breakpoint = 900;
   useEffect(() => {
     const handleResizeWindow = () => setWidth(window.innerWidth);
     window.addEventListener("resize", handleResizeWindow);
@@ -13,15 +19,18 @@ export default function Test() {
   }, []);
   if (width < breakpoint) {
     return (
-      <div className="w-full btm-nav">
-        <a href="/" className={"active"}>
-          <Newspaper />
+      <div className="w-full btm-nav z-300">
+        <a href="/" className={path === "/" ? "active" : ""}>
+          <Home />
         </a>
-        <a href="/">
-          <Newspaper />
+        <a href="/search" className={path === "/search" ? "active" : ""}>
+          <Search />
         </a>
-        <a href="/">
-          <Newspaper />
+        <a
+          href={`/user/${user}`}
+          className={path.includes(`/user/${user}`) ? "active" : ""}
+        >
+          <User />
         </a>
       </div>
     );
