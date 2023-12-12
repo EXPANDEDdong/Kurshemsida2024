@@ -80,7 +80,7 @@ export default function SearchFeed({
       setIsLoading(false);
     }
   };
-  const fetchDataDebounced = debounce(fetchData, 200);
+  const fetchDataDebounced = debounce(fetchData, 500);
   const observerTarget = useRef(null);
 
   useEffect(() => {

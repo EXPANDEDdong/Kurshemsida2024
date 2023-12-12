@@ -21,6 +21,7 @@ if (!result) return Astro.redirect("/404");
 
 <Layout title="Balls">
   <TestFeed initialFeed={result} currentUser={currentUser} client:load />
+  <PostForm client:load />
 </Layout>
 
 <style></style>
