@@ -1,0 +1,50 @@
+---
+import fetchJson from "@utils/fetchJson";
+import PostFeed from "@components/PostFeed";
+import { importJWK } from "jose";
+import { verifyToken } from "~/server/users";
+import Userpage from "@layouts/Userpage.astro";
+import DeleteUser from "@components/DeleteUser";
+const { user } = Astro.params;
+
+const origin = Astro.url.origin;
+const body = {
+  username: user,
+};
+const userPage = await fetchJson(`${origin}/api/getuser`, {
+  method: "POST",
+  body: JSON.stringify(body),
+});
+if (!userPage?.username) {
+  return Astro.redirect("/404");
+}
+const authToken = Astro.cookies.get("authToken")?.value;
+if (!authToken) return Astro.redirect("/404");
+
+// rutter som bara hanterade att hämta användare från cookies
+// funkar inte i astro komponenter av någon anledning så det här är en temporär lösning
+const secretKey = await importJWK({
+  kty: "oct",
+  k: import.meta.env.JWT_SECRET,
+  alg: "HS256",
+});
+const { payload } = await verifyToken(authToken, secretKey);
+if (!payload) return;
+const currentUser = payload.username;
+---
+
+<Userpage
+  username={userPage.username}
+  bio={userPage.description}
+  role={userPage.role}
+>
+  <div class="w-full">
+    <!-- <DeleteUser client:load /> -->
+    <PostFeed
+      role={userPage.role}
+      feed={userPage.posts}
+      currentUser={currentUser}
+      client:visible
+    />
+  </div>
+</Userpage>

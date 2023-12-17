@@ -1,0 +1,12 @@
+---
+import SideMenu from "./SideMenu";
+import { GET } from "~/pages/api/loggedinuser";
+
+const response = await GET(Astro);
+if (!(response instanceof Response)) return Astro.redirect("/404");
+const { username, role } = await response.json();
+---
+
+<aside class="h-full w-full">
+  <SideMenu username={username} role={role} client:only="preact" />
+</aside>

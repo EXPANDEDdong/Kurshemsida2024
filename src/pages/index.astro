@@ -2,15 +2,26 @@
 import Layout from "../layouts/Layout.astro";
 import PostForm from "@components/PostForm";
 import PostFeed from "@components/PostFeed";
-import Login from "@components/Login";
+import fetchJson from "@utils/fetchJson";
+import TestFeed from "@components/TestFeed";
+import { importJWK } from "jose";
+import { verifyToken } from "~/server/users";
+import CurrentUser from "@components/CurrentUser.astro";
+import HideOnMobile from "@components/blocks/HideOnMobile";
+import { GET } from "~/pages/api/loggedinuser";
+const origin = Astro.url.origin;
+
+const response = await GET(Astro);
+if (!(response instanceof Response)) return Astro.redirect("/404");
+const { username } = await response.json();
+const currentUser = username;
+const result = await fetchJson(`${origin}/api/page?page=0`);
+if (!result) return Astro.redirect("/404");
 ---
 
 <Layout title="Balls">
-  <main>
-    <!-- <PostForm client:load /> -->
-    <PostFeed client:load />
-    <Login client:load />
-  </main>
+  <TestFeed initialFeed={result} currentUser={currentUser} client:load />
+  <PostForm client:load />
 </Layout>
 
 <style></style>

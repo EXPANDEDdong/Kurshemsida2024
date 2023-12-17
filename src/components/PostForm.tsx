@@ -22,6 +22,9 @@ export default function PostForm() {
         const result = await fetchJson("/api/posts", {
           method: "POST",
           body: JSON.stringify(body),
+          headers: {
+            credentials: "include",
+          },
         });
       } catch (error) {
         console.error("Error submitting form:", error);
@@ -34,25 +37,50 @@ export default function PostForm() {
   };
 
   return (
-    <div>
+    <div className="py-4 px-6 w-full h-full bg-base-100 rounded-lg shadow-lg">
+      <h4 className="text-xl text-neutral-100 font-semibold">Make post</h4>
       <form onSubmit={handleSubmit}>
-        <p>Title: {title}</p>
-        <input
-          type="text"
-          value={title}
-          onInput={handleInputTitle}
-          className="border border-black"
-          required
-        />
-        <p>Content: {content}</p>
-        <input
-          type="text"
-          value={content}
-          onInput={handleInputContent}
-          className="border border-black"
-          required
-        />
-        <button type="submit">Submit</button>
+        <div className="flex flex-col items-center w-full gap-3 my-2">
+          <div className="w-11/12">
+            <label
+              className="block text-gray-400 text-sm font-bold mb-1"
+              htmlFor="title"
+            >
+              Title:
+            </label>
+            <input
+              type="text"
+              id={"title"}
+              value={title}
+              onInput={handleInputTitle}
+              className="w-full input input-bordered"
+              placeholder={"Post title here."}
+              required
+            />
+          </div>
+          <div className="w-11/12">
+            <label
+              className="block text-gray-400 text-sm font-bold mb-1"
+              htmlFor="content"
+            >
+              Content:
+            </label>
+            <textarea
+              id={"content"}
+              value={content}
+              onInput={handleInputContent}
+              className="w-full textarea textarea-bordered resize-none"
+              placeholder={"Post content here."}
+              required
+            />
+          </div>
+        </div>
+        <div className="divider"></div>
+        <div className="flex justify-center w-full">
+          <button type="submit" className="btn btn-secondary btn-block">
+            Submit
+          </button>
+        </div>
       </form>
     </div>
   );

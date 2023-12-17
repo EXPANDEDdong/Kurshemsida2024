@@ -1,0 +1,12 @@
+---
+import SearchPage from "@components/SearchPage";
+import Layout from "@layouts/Layout.astro";
+import { GET } from "./api/loggedinuser";
+const response = await GET(Astro);
+if (!(response instanceof Response)) return Astro.redirect("/404");
+const { username, role } = await response.json();
+---
+
+<Layout title="Search">
+  <SearchPage currentUser={username} client:load />
+</Layout>

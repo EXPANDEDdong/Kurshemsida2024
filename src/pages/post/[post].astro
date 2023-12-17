@@ -1,0 +1,59 @@
+---
+import Layout from "@layouts/Layout.astro";
+import fetchJson from "@utils/fetchJson";
+import Post from "@components/blocks/Post";
+import CommentsList from "@components/CommentsList";
+import { importJWK } from "jose";
+import { verifyToken } from "~/server/users";
+const { post } = Astro.params;
+const id = String(post);
+const body = {
+  id: id,
+};
+const origin = Astro.url.origin;
+const postPage = await fetchJson(`${origin}/api/singlePost`, {
+  method: "POST",
+  body: JSON.stringify(body),
+});
+if (!postPage) {
+  return Astro.redirect("/404");
+}
+const authToken = Astro.cookies.get("authToken")?.value;
+if (!authToken) return;
+
+const secretKey = await importJWK({
+  kty: "oct",
+  k: import.meta.env.JWT_SECRET,
+  alg: "HS256",
+});
+const { payload } = await verifyToken(authToken, secretKey);
+if (!payload) return;
+const currentUser = payload.username;
+---
+
+<Layout title={`${postPage.title}` || "User not found"}>
+  <div class="w-full">
+    <div class="w-full bg-base-300 shadow-xl mb-8 p-4 grid">
+      {
+        postPage && (
+          <Post
+            username={postPage.user.username}
+            id={postPage.id}
+            title={postPage.title}
+            content={postPage.content}
+            date={postPage.postedDate}
+            currentUser={currentUser}
+            onFeed={false}
+            client:load
+          />
+        )
+      }
+    </div>
+    <CommentsList
+      onUserPage={false}
+      currentUser={currentUser}
+      comments={postPage.comments}
+      client:load
+    />
+  </div>
+</Layout>
