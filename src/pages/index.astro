@@ -1,27 +1,26 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import PostForm from "@components/PostForm";
-import PostFeed from "@components/PostFeed";
 import fetchJson from "@utils/fetchJson";
-import TestFeed from "@components/TestFeed";
-import { importJWK } from "jose";
-import { verifyToken } from "~/server/users";
-import CurrentUser from "@components/CurrentUser.astro";
-import HideOnMobile from "@components/blocks/HideOnMobile";
-import { GET } from "~/pages/api/loggedinuser";
+import TestFeed from "@components/react-components/TestFeed";
+import { GET } from "~/pages/api/users/loggedinuser";
+import PostForm from "@components/react-components/PostForm";
 const origin = Astro.url.origin;
 
-const response = await GET(Astro);
+const response = await GET({ ...Astro, ResponseWithEncoding: Response });
 if (!(response instanceof Response)) return Astro.redirect("/404");
 const { username } = await response.json();
 const currentUser = username;
-const result = await fetchJson(`${origin}/api/page?page=0`);
+const result = await fetchJson(`${origin}/api/posts/page?page=0`);
 if (!result) return Astro.redirect("/404");
 ---
 
 <Layout title="Balls">
   <TestFeed initialFeed={result} currentUser={currentUser} client:load />
-  <PostForm client:load />
+  <div class="toast toast-end toast-bottom mb-16 min-[900px]:mb-0 z-40">
+    <PostForm client:visible />
+  </div>
+
+  <div class="h-32"></div>
 </Layout>
 
 <style></style>

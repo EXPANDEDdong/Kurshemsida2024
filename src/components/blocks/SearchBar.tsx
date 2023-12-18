@@ -1,6 +1,5 @@
 import { useState } from "preact/hooks";
-
-export type searchType = "Posts" | "Users";
+import type { searchType } from "@utils/types";
 
 export default function SearchBar({
   onSearch,

@@ -44,7 +44,7 @@ export const comments = mysqlTable("comment", {
   postedDate: datetime("postedDate", { mode: "date" })
     .$default(() => new Date())
     .notNull(),
-  content: text("content"),
+  content: text("content").notNull(),
 });
 
 export const userPermissions = mysqlTable("userPerms", {

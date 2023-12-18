@@ -1,0 +1,41 @@
+---
+import Avatar from "~/components/react-components/icons/Avatar";
+import { GET } from "~/pages/api/users/loggedinuser";
+import Icon from "~/components/react-components/icons/Icon";
+
+const response = await GET({ ...Astro, ResponseWithEncoding: Response });
+if (!(response instanceof Response)) return Astro.redirect("/404");
+const { username, role } = await response.json();
+const origin = Astro.url.origin;
+---
+
+<header class="navbar bg-base-100 rounded-b-lg z-50 relative">
+  <div class="flex-1">
+    <a href=`${origin}/` class="btn btn-ghost flex flex-row" data-astro-prefetch
+      ><span class="text-[#1888f2]"><Icon height={24} width={24} /></span><span
+        class="text-xl">Kvitter</span
+      ></a
+    >
+  </div>
+  <div class="flex-none z-85">
+    <div class="dropdown dropdown-left z-90">
+      <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
+        <div class="rounded-full grid">
+          <Avatar />
+        </div>
+      </div>
+      <ul class="menu dropdown-content bg-base-200 rounded-box w-52 z-900">
+        <li><a href={`${origin}/user/${username}`}>Profile</a></li>
+        {
+          role === "admin" && (
+            <li>
+              <a href={`${origin}/admin`}>Admin</a>
+            </li>
+          )
+        }
+        <li><a href={`${origin}/settings`}>Settings</a></li>
+        <li><a href={`${origin}/logout`}>Log out</a></li>
+      </ul>
+    </div>
+  </div>
+</header>

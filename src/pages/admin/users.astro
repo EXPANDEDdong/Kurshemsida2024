@@ -1,6 +1,7 @@
 ---
 import Layout from "@layouts/Layout.astro";
 import { getAllUsers } from "~/server/users";
+import User_AdminPage from "@components/templates/User_AdminPage";
 
 const users = await getAllUsers();
 ---
@@ -8,46 +9,24 @@ const users = await getAllUsers();
 <Layout title="Admin">
   <div class="w-full h-full">
     <div class="grid w-full h-full">
-      <table
-        class="table table-zebra h-fit w-11/12 justify-self-center border border-base-200"
-      >
-        <thead>
-          <tr class="text-xl text-neutral-50">
-            <th>ID</th>
-            <th>Email</th>
-            <th>Username</th>
-            <th>Description</th>
-            <th>Role</th>
-          </tr>
-        </thead>
-        <tbody>
-          {
-            users.map((user) => {
-              const role = user.permissions.role;
+      <div class="flex flex-col gap-4">
+        {
+          users.map((user) => {
+            const role = user.permissions.role;
 
-              return (
-                <tr class="text-lg">
-                  <td>{user.id}</td>
-                  <td>{user.email}</td>
-                  <td>{user.username}</td>
-                  <td>{user.description}</td>
-                  <td>
-                    <div
-                      class={
-                        role === "admin"
-                          ? `badge badge-warning`
-                          : `badge badge-info`
-                      }
-                    >
-                      {role}
-                    </div>
-                  </td>
-                </tr>
-              );
-            })
-          }
-        </tbody>
-      </table>
+            return (
+              <User_AdminPage
+                id={user.id}
+                email={user.email}
+                username={user.username}
+                description={user.description}
+                role={role}
+                client:visible
+              />
+            );
+          })
+        }
+      </div>
     </div>
   </div>
 </Layout>

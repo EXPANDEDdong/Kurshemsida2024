@@ -9,6 +9,7 @@ import {
   errors,
   type KeyLike,
 } from "jose";
+import type { UserData } from "@utils/types";
 
 interface CustomData {
   username: string;
@@ -152,51 +153,6 @@ export const createUser = async (
 };
 
 // ===============================================================================
-export interface CommentsData {
-  user: {
-    username: string;
-  };
-  id: string;
-  content: string | null;
-  postedDate: Date;
-  post: {
-    id: string;
-    title: string | null;
-    content: string | null;
-    postedDate: Date;
-    user: {
-      username: string | null;
-    };
-  };
-}
-
-export interface PostsData {
-  id: string;
-  title: string;
-  content: string;
-  postedDate: Date;
-  user: {
-    username: string;
-  };
-  comments: {
-    id: string;
-    content: string | null;
-    postedDate: Date;
-    user: {
-      username: string;
-    };
-  }[];
-}
-
-export interface UserData {
-  username: string;
-  description: string | null;
-  posts: PostsData[];
-  comments: CommentsData[];
-  permissions: {
-    role: "user" | "admin";
-  };
-}
 
 const verifyPassword = async (
   storedPassword: string,
@@ -235,7 +191,7 @@ export const loginUser = async (
 };
 export const getUser = async (
   username: string
-): Promise<{ message: string; user: UserData | undefined | null }> => {
+): Promise<{ message: string; user: UserData | null }> => {
   // Retrieve user from database along with
   // all posts and comments made by that user and the comments on those posts
 
@@ -264,6 +220,13 @@ export const getUser = async (
             columns: {
               username: true,
             },
+            with: {
+              permissions: {
+                columns: {
+                  role: true,
+                },
+              },
+            },
           },
           comments: {
             columns: {
@@ -275,6 +238,13 @@ export const getUser = async (
               user: {
                 columns: {
                   username: true,
+                },
+                with: {
+                  permissions: {
+                    columns: {
+                      role: true,
+                    },
+                  },
                 },
               },
             },
@@ -301,12 +271,26 @@ export const getUser = async (
                 columns: {
                   username: true,
                 },
+                with: {
+                  permissions: {
+                    columns: {
+                      role: true,
+                    },
+                  },
+                },
               },
             },
           },
           user: {
             columns: {
               username: true,
+            },
+            with: {
+              permissions: {
+                columns: {
+                  role: true,
+                },
+              },
             },
           },
         },

@@ -1,7 +1,12 @@
 ---
 import Layout from "@layouts/Layout.astro";
+import SettingsTabs from "./_SettingsTabs.astro";
 ---
 
 <Layout title="Settings">
-  <div></div>
+  <div class="flex flex-col gap-4">
+    <h4 class="text-4xl font-semibold text-center">Settings</h4>
+    <SettingsTabs />
+    <div class="w-full h-full"></div>
+  </div>
 </Layout>

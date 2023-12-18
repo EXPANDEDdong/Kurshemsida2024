@@ -1,37 +1,31 @@
 ---
 import Layout from "@layouts/Layout.astro";
 import fetchJson from "@utils/fetchJson";
-import Post from "@components/blocks/Post";
-import CommentsList from "@components/CommentsList";
+import Post from "@components/templates/Post";
+import CommentsList from "@components/react-components/CommentsList";
 import { importJWK } from "jose";
 import { verifyToken } from "~/server/users";
+import { GET } from "~/pages/api/users/loggedinuser";
 const { post } = Astro.params;
 const id = String(post);
 const body = {
   id: id,
 };
 const origin = Astro.url.origin;
-const postPage = await fetchJson(`${origin}/api/singlePost`, {
+const postPage = await fetchJson(`${origin}/api/posts/singlePost`, {
   method: "POST",
   body: JSON.stringify(body),
 });
 if (!postPage) {
   return Astro.redirect("/404");
 }
-const authToken = Astro.cookies.get("authToken")?.value;
-if (!authToken) return;
-
-const secretKey = await importJWK({
-  kty: "oct",
-  k: import.meta.env.JWT_SECRET,
-  alg: "HS256",
-});
-const { payload } = await verifyToken(authToken, secretKey);
-if (!payload) return;
-const currentUser = payload.username;
+const response = await GET({ ...Astro, ResponseWithEncoding: Response });
+if (!(response instanceof Response)) return Astro.redirect("/404");
+const { username } = await response.json();
+const currentUser = username;
 ---
 
-<Layout title={`${postPage.title}` || "User not found"}>
+<Layout title={postPage.title}>
   <div class="w-full">
     <div class="w-full bg-base-300 shadow-xl mb-8 p-4 grid">
       {
@@ -39,9 +33,11 @@ const currentUser = payload.username;
           <Post
             username={postPage.user.username}
             id={postPage.id}
+            role={postPage.user.permissions.role}
             title={postPage.title}
             content={postPage.content}
             date={postPage.postedDate}
+            commentCount={postPage.comments.length}
             currentUser={currentUser}
             onFeed={false}
             client:load
@@ -55,5 +51,6 @@ const currentUser = payload.username;
       comments={postPage.comments}
       client:load
     />
+    <div class="h-48"></div>
   </div>
 </Layout>

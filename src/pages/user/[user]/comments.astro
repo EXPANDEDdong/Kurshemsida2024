@@ -1,33 +1,25 @@
 ---
 import fetchJson from "@utils/fetchJson";
-import CommentsList from "@components/CommentsList";
-import { importJWK } from "jose";
-import { verifyToken } from "~/server/users";
+import CommentsList from "@components/react-components/CommentsList";
 import Userpage from "@layouts/Userpage.astro";
+import { GET } from "~/pages/api/users/loggedinuser";
 const { user } = Astro.params;
 
 const origin = Astro.url.origin;
 const body = {
   username: user,
 };
-const userPage = await fetchJson(`${origin}/api/getuser`, {
+const userPage = await fetchJson(`${origin}/api/users/getuser`, {
   method: "POST",
   body: JSON.stringify(body),
 });
 if (!userPage?.username) {
   return Astro.redirect("/404");
 }
-const authToken = Astro.cookies.get("authToken")?.value;
-if (!authToken) return Astro.redirect("/404");
-
-const secretKey = await importJWK({
-  kty: "oct",
-  k: import.meta.env.JWT_SECRET,
-  alg: "HS256",
-});
-const { payload } = await verifyToken(authToken, secretKey);
-if (!payload) return;
-const currentUser = payload.username;
+const response = await GET({ ...Astro, ResponseWithEncoding: Response });
+if (!(response instanceof Response)) return Astro.redirect("/404");
+const data = await response.json();
+const currentUser = data.username;
 ---
 
 <Userpage
@@ -42,5 +34,6 @@ const currentUser = payload.username;
       currentUser={currentUser}
       client:visible
     />
+    <div class="h-48"></div>
   </div>
 </Userpage>

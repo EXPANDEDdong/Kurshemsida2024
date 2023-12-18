@@ -1,0 +1,18 @@
+---
+const origin = Astro.url.origin;
+const path = Astro.url.pathname;
+---
+
+<div class="w-full flex flex-row justify-center">
+  <div class="tabs tabs-boxed w-11/12">
+    <a
+      href=`${origin}/settings`
+      class={`tab ${path === `/settings` ? "tab-active" : ""}`}>General</a
+    >
+    <a
+      href=`${origin}/settings/account`
+      class={`tab ${path === `/settings/account` ? "tab-active" : ""}`}
+      >Account</a
+    >
+  </div>
+</div>

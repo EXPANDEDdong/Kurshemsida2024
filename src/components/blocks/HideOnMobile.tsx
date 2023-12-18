@@ -1,6 +1,6 @@
 import { useEffect, useState } from "preact/hooks";
 
-export default function HideOnMobile(props) {
+export default function HideOnMobile(props: { children: any }) {
   const [width, setWidth] = useState(window.innerWidth);
   const breakpoint = 900;
   useEffect(() => {

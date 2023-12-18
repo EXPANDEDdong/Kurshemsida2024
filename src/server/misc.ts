@@ -1,13 +1,13 @@
 import db from "~/server/db";
-import { comments, posts, users } from "@drizzle/schema/posts";
-import { exists, like, lte, sql } from "drizzle-orm";
-import { QueryBuilder } from "drizzle-orm/mysql-core";
+import { posts, users } from "@drizzle/schema/posts";
+import { like } from "drizzle-orm";
+import type { PostData, UserData } from "@utils/types";
 
 export const searchPosts = async (
   searchQuery: string,
   limit: number,
   offset: number
-) => {
+): Promise<PostData[]> => {
   const results = await db.query.posts.findMany({
     limit: limit,
     offset: offset,
@@ -56,12 +56,14 @@ export const searchPosts = async (
 
   return results;
 };
-
+/** search for users
+ * @param {string} searchQuery - the query to search with
+ */
 export const searchUsers = async (
   searchQuery: string,
   limit: number,
   offset: number
-) => {
+): Promise<Pick<UserData, "username" | "description" | "permissions">[]> => {
   const results = await db.query.users.findMany({
     limit: limit,
     offset: offset,

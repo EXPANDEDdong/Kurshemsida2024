@@ -5,29 +5,8 @@ import db, {
   type InsertUser,
   type SelectPost,
 } from "~/server/db";
-import { eq } from "drizzle-orm";
-import type { PostsData } from "./users";
-
-export interface PostsOnFeed {
-  id: string;
-  title: string;
-  content: string;
-  postedDate: Date;
-  user: {
-    username: string;
-    permissions: {
-      role: "user" | "admin";
-    };
-  };
-  comments: {
-    id: string;
-    content: string | null;
-    postedDate: Date;
-    user: {
-      username: string;
-    };
-  }[];
-}
+import { eq, sql } from "drizzle-orm";
+import type { PostData } from "@utils/types";
 
 export const createPost = async (data: InsertPost) => {
   const insertData = await db.insert(posts).values(data);
@@ -36,12 +15,13 @@ export const createPost = async (data: InsertPost) => {
 
 export const createComment = async (data: InsertComment) => {
   const insertData = await db.insert(comments).values(data);
+  return;
 };
 
 export const getPosts = async (
   limit: number,
   offset: number
-): Promise<PostsOnFeed[]> => {
+): Promise<PostData[]> => {
   const posts = await db.query.posts.findMany({
     limit: limit,
     offset: offset,
@@ -122,8 +102,8 @@ export const getCommentAuthorId = async (commentId: string) => {
 
 export const getSinglePost = async (
   postId: string
-): Promise<PostsOnFeed | undefined> => {
-  return await db.query.posts.findFirst({
+): Promise<PostData | null> => {
+  const result = await db.query.posts.findFirst({
     where: eq(posts.id, postId),
     with: {
       user: {
@@ -150,6 +130,13 @@ export const getSinglePost = async (
             columns: {
               username: true,
             },
+            with: {
+              permissions: {
+                columns: {
+                  role: true,
+                },
+              },
+            },
           },
           post: {
             columns: {
@@ -166,4 +153,8 @@ export const getSinglePost = async (
       postedDate: true,
     },
   });
+  if (!result) {
+    return null;
+  }
+  return result;
 };

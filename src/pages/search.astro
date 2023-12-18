@@ -1,8 +1,8 @@
 ---
-import SearchPage from "@components/SearchPage";
+import SearchPage from "@components/react-components/SearchPage";
 import Layout from "@layouts/Layout.astro";
-import { GET } from "./api/loggedinuser";
-const response = await GET(Astro);
+import { GET } from "./api/users/loggedinuser";
+const response = await GET({ ...Astro, ResponseWithEncoding: Response });
 if (!(response instanceof Response)) return Astro.redirect("/404");
 const { username, role } = await response.json();
 ---

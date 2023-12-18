@@ -1,0 +1,32 @@
+---
+import { GET } from "~/pages/api/users/loggedinuser";
+import Home from "~/components/react-components/icons/Home";
+import Search from "~/components/react-components/icons/Search";
+import UserIcon from "~/components/react-components/icons/UserIcon";
+
+const response = await GET({ ...Astro, ResponseWithEncoding: Response });
+if (!(response instanceof Response)) return Astro.redirect("/404");
+const { username, role } = await response.json();
+
+const path = Astro.url.pathname;
+---
+
+<div class="w-full btm-nav z-300">
+  <a href="/" class={path === "/" ? "active" : ""} data-astro-prefetch>
+    <Home />
+  </a>
+  <a
+    href="/search"
+    class={path === "/search" ? "active" : ""}
+    data-astro-prefetch
+  >
+    <Search />
+  </a>
+  <a
+    href={`/user/${username}`}
+    class={path.includes(`/user/${username}`) ? "active" : ""}
+    data-astro-prefetch
+  >
+    <UserIcon />
+  </a>
+</div>

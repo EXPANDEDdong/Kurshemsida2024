@@ -4,15 +4,15 @@ import { isAdmin, verifyToken } from "~/server/users";
 
 const publicRoutes = new Set([
   "/",
-  "/api/loginuser",
-  "/api/createuser",
+  "/api/users/loginuser",
+  "/api/users/createuser",
   "/login",
   "/create",
-  "/api/feed",
-  "/api/getuser",
-  "/api/singlePost",
-  "/api/page",
-  "/api/loggedinuser",
+  "/api/users/getuser",
+  "/api/posts/singlePost",
+  "/api/posts/page",
+  "/api/users/loggedinuser",
+  "/api/users/logoutuser",
   "/404",
 ]);
 
