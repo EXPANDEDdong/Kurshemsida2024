@@ -35,7 +35,7 @@ export const POST: APIRoute = async ({ cookies, request }) => {
     maxAge: 60 * 60 * 24 * 7,
   });
 
-  return new Response(JSON.stringify(message), {
+  return new Response(JSON.stringify({ success, message }), {
     status: 200,
   });
 };
