@@ -11,6 +11,34 @@ const { username, role } = Astro.props;
 const origin = Astro.url.origin;
 ---
 
+<script>
+  // Define a function to handle dropdown behavior
+  const handleDropdown = () => {
+    const dropdownButton = document.getElementById("dropdownButton");
+    const dropdownContent = document.getElementById("dropdownContent");
+
+    if (!dropdownButton || !dropdownContent) {
+      return;
+    }
+
+    // Toggle dropdown on button click
+    dropdownButton.addEventListener("click", (event) => {
+      event.stopPropagation(); // Prevents the click event from reaching document and closing the dropdown
+      dropdownContent.classList.toggle("open");
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener("click", () => {
+      dropdownContent.classList.remove("open");
+    });
+
+    // Prevent dropdown from closing when clicking inside
+    dropdownContent.addEventListener("click", (event) => {
+      event.stopPropagation();
+    });
+  };
+  document.addEventListener("DOMContentLoaded", handleDropdown);
+</script>
 <header class="relative z-50 rounded-b-lg navbar bg-base-100">
   <div class="flex-1">
     <a href={`/`} class="flex flex-row btn btn-ghost" data-astro-prefetch
@@ -21,12 +49,21 @@ const origin = Astro.url.origin;
   </div>
   <div class="flex-none z-85">
     <div class="dropdown dropdown-left z-90">
-      <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
+      <div
+        id="dropdownButton"
+        tabindex="0"
+        role="button"
+        class="btn btn-ghost btn-circle avatar"
+      >
         <div class="grid rounded-full">
           <Avatar />
         </div>
       </div>
-      <ul class="menu dropdown-content bg-base-200 rounded-box w-52 z-900">
+      <ul
+        id="dropdownContent"
+        tabindex="0"
+        class="menu dropdown-content bg-base-200 rounded-box w-52 z-900"
+      >
         <li><a href={`/user/${username}`}>Profile</a></li>
         {
           role === "admin" && (
