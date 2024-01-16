@@ -1,8 +1,10 @@
 import fetchJson from "@utils/fetchJson";
 import { useState } from "preact/hooks";
+import { XCircle } from "lucide-preact";
 
 export default function CreateForm() {
   const [user, setUser] = useState({ email: "", username: "", password: "" });
+  const [error, setError] = useState({ isError: false, message: "" });
 
   const handleInput = (e: any) => {
     setUser({
@@ -19,12 +21,35 @@ export default function CreateForm() {
       password: user.password,
     };
     try {
-      const result = await fetchJson("/api/users/createuser", {
-        method: "POST",
-        body: JSON.stringify(body),
-      });
+      const result = await fetchJson<{ success: boolean; message: string }>(
+        "/api/users/createuser",
+        {
+          method: "POST",
+          body: JSON.stringify(body),
+        }
+      );
+
+      if (!result) {
+        setError({ isError: true, message: "Unknown Error." });
+        return;
+      }
+
+      if (!result.success) {
+        setError({ isError: true, message: result.message });
+        return;
+      }
+
+      window.location.replace(window.location.origin);
+      return;
     } catch (error) {
       console.error("Error submitting form:", error);
+
+      if (!(error instanceof Error)) {
+        setError({ isError: true, message: "Unknown Error." });
+        return;
+      }
+      setError({ isError: true, message: error.message });
+      return;
     }
   };
 
@@ -97,9 +122,20 @@ export default function CreateForm() {
         <div className="flex justify-center w-full">
           <button
             type="submit"
-            className="btn btn-block btn-success text-success-content"
+            className={`btn btn-block transition-all duration-700 ease-in-out ${
+              !error.isError
+                ? "btn-success text-success-content"
+                : "btn-error text-error-content animate-pulse"
+            }`}
           >
-            Create
+            {!error.isError ? (
+              <>Create</>
+            ) : (
+              <>
+                <XCircle />
+                {error.message} Please refresh and try again
+              </>
+            )}
           </button>
         </div>
       </form>

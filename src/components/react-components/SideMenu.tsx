@@ -1,3 +1,4 @@
+import type { userRole } from "@utils/types";
 import { Home, Search, Shield, User, Cog } from "lucide-preact";
 
 export default function SideMenu({
@@ -5,7 +6,7 @@ export default function SideMenu({
   role,
 }: {
   username: string;
-  role: "user" | "admin";
+  role: userRole;
 }) {
   return (
     <div className={"flex flex-col gap-4 mr-4 pt-2"}>

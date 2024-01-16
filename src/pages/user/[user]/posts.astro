@@ -1,38 +1,32 @@
 ---
-import fetchJson from "@utils/fetchJson";
 import PostList from "@components/react-components/PostList";
-import { GET } from "~/pages/api/users/loggedinuser";
 import Userpage from "@layouts/Userpage.astro";
+import { getCurrentUser, getUserPage } from "~/server/misc";
 const { user } = Astro.params;
-
-const origin = Astro.url.origin;
-const body = {
-  username: user,
-};
-const userPage = await fetchJson(`${origin}/api/users/getuser`, {
-  method: "POST",
-  body: JSON.stringify(body),
-});
-if (!userPage?.username) {
+if (!user) {
   return Astro.redirect("/404");
 }
-
-const response = await GET({ ...Astro, ResponseWithEncoding: Response });
-if (!(response instanceof Response)) return Astro.redirect("/404");
-const data = await response.json();
-const currentUser = data.username;
+const userPage = await getUserPage(user);
+if (!userPage) {
+  return Astro.redirect("/404");
+}
+const result = await getCurrentUser(Astro.request);
+if (!result || !result.user) {
+  return Astro.redirect("/login");
+}
+const { username } = result.user;
 ---
 
 <Userpage
   username={userPage.username}
-  bio={userPage.description}
-  role={userPage.role}
+  bio={userPage.description || "No Description."}
+  role={userPage.permissions.role}
 >
   <div class="w-full">
     <PostList
-      role={userPage.role}
+      role={userPage.permissions.role}
       feed={userPage.posts}
-      currentUser={currentUser}
+      currentUser={username}
       client:visible
     />
     <div class="h-48"></div>

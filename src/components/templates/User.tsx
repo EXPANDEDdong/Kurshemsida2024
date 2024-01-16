@@ -10,7 +10,11 @@ export default function User({
   role: userRole;
 }) {
   return (
-    <div className="py-4 px-6 bg-base-100 rounded-lg shadow-lg w-11/12 relative justify-self-center z-50">
+    <div
+      className={
+        "py-4 px-6 bg-base-100 rounded-lg shadow-lg w-11/12 relative justify-self-center z-50"
+      }
+    >
       <div className={"h-full w-full flex flex-col relative"}>
         <a href={`/user/${username}`} className={"w-full h-full absolute"}></a>
         <div className={"w-full flex flex-row gap-4 items-center"}>

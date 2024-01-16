@@ -1,17 +1,19 @@
 ---
+import type { userRole } from "@utils/types";
 import Avatar from "~/components/react-components/icons/Avatar";
-import { GET } from "~/pages/api/users/loggedinuser";
 import Icon from "~/components/react-components/icons/Icon";
+interface Props {
+  username: string;
+  role: userRole;
+}
 
-const response = await GET({ ...Astro, ResponseWithEncoding: Response });
-if (!(response instanceof Response)) return Astro.redirect("/404");
-const { username, role } = await response.json();
+const { username, role } = Astro.props;
 const origin = Astro.url.origin;
 ---
 
-<header class="navbar bg-base-100 rounded-b-lg z-50 relative">
+<header class="relative z-50 rounded-b-lg navbar bg-base-100">
   <div class="flex-1">
-    <a href=`${origin}/` class="btn btn-ghost flex flex-row" data-astro-prefetch
+    <a href={`/`} class="flex flex-row btn btn-ghost" data-astro-prefetch
       ><span class="text-[#1888f2]"><Icon height={24} width={24} /></span><span
         class="text-xl">Kvitter</span
       ></a
@@ -20,21 +22,32 @@ const origin = Astro.url.origin;
   <div class="flex-none z-85">
     <div class="dropdown dropdown-left z-90">
       <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
-        <div class="rounded-full grid">
+        <div class="grid rounded-full">
           <Avatar />
         </div>
       </div>
       <ul class="menu dropdown-content bg-base-200 rounded-box w-52 z-900">
-        <li><a href={`${origin}/user/${username}`}>Profile</a></li>
+        <li><a href={`/user/${username}`}>Profile</a></li>
         {
           role === "admin" && (
             <li>
-              <a href={`${origin}/admin`}>Admin</a>
+              <a href={`/admin`}>Admin</a>
             </li>
           )
         }
-        <li><a href={`${origin}/settings`}>Settings</a></li>
-        <li><a href={`${origin}/logout`}>Log out</a></li>
+        <li><a href={`/settings`}>Settings</a></li>
+        <li>
+          {
+            /*
+          This is like this because prefetch is enabled due to view transitions. 
+          This means that whenever you hover over the log out button, you get logged out.
+          Will try to find a better solution later.
+          */
+          }
+          <button onclick="window.location.replace(`${origin}/logout`)"
+            >Log out</button
+          >
+        </li>
       </ul>
     </div>
   </div>

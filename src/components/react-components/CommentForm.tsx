@@ -1,20 +1,30 @@
 import fetchJson from "@utils/fetchJson";
+import { createRef } from "preact";
 import { useState } from "preact/hooks";
+import { MessagesSquare, PlusCircle } from "lucide-preact";
 
-export default function CommentForm({
-  postId,
-  onNewComment,
-}: {
-  postId: string;
-  onNewComment: (comment: { content: string; targetId: string }) => void;
-}) {
+export default function CommentForm({ postId }: { postId: string }) {
   const [content, setContent] = useState("");
+
+  const dialogRef = createRef();
 
   const handleInput = (e: any) => {
     setContent(e.target.value);
   };
 
-  const handleSubmit = async (event: any) => {
+  const openDialog = () => {
+    if (dialogRef.current) {
+      dialogRef.current.showModal();
+    }
+  };
+
+  const closeDialog = () => {
+    if (dialogRef.current) {
+      dialogRef.current.close();
+    }
+  };
+
+  const handleSubmit = async (event: Event) => {
     event.preventDefault();
     const body = {
       content: content,
@@ -24,35 +34,56 @@ export default function CommentForm({
       method: "POST",
       body: JSON.stringify(body),
     });
-    onNewComment(result);
   };
 
   return (
-    <div className={"w-full mt-6"}>
-      <form onSubmit={handleSubmit}>
-        <label
-          className="block text-gray-400 text-sm font-bold mb-1"
-          htmlFor="comment"
-        >
-          Comment:
-        </label>
-        <div className="flex h-20 flex-row w-full gap-3 my-2" id={"comment"}>
-          <div className="w-full grow">
-            <textarea
-              value={content}
-              onInput={handleInput}
-              className="w-full textarea textarea-bordered resize-none h-full"
-              placeholder={"Comment here."}
-              required
-            />
-          </div>
-          <div className="grow-0 h-full self-center">
-            <button type="submit" className="btn btn-primary h-full">
-              Submit
-            </button>
-          </div>
+    <div>
+      <button
+        onClick={openDialog}
+        className={
+          "btn btn-success z-600 text-success-content w-fit flex flex-row gap-2 mt-2"
+        }
+      >
+        <MessagesSquare />
+        Comment
+      </button>
+
+      <dialog ref={dialogRef} className={"modal"}>
+        <div className={"modal-box"}>
+          <h4 className={"text-xl font-semibold mb-4"}>New Comment</h4>
+          <form onSubmit={handleSubmit}>
+            <div className="flex flex-col gap-4">
+              <div>
+                <label
+                  className="block text-sm font-bold mb-1"
+                  htmlFor="content"
+                >
+                  Content:
+                </label>
+                <textarea
+                  id={"content"}
+                  value={content}
+                  name="content"
+                  onInput={handleInput}
+                  className="w-full textarea textarea-bordered resize-none"
+                  placeholder={"Comment text here."}
+                  required
+                />
+              </div>
+              <div className="divider"></div>
+              <button
+                type="submit"
+                className="btn btn-success text-success-content btn-block"
+              >
+                <PlusCircle />
+                Comment
+              </button>
+            </div>
+          </form>
         </div>
-      </form>
+
+        <button onClick={closeDialog} className="modal-backdrop"></button>
+      </dialog>
     </div>
   );
 }

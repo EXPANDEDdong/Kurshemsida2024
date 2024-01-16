@@ -1,4 +1,4 @@
-export type userRole = "user" | "admin";
+import type { userRole } from "@utils/types";
 
 export default function User({
   username,

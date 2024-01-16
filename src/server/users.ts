@@ -164,34 +164,38 @@ const verifyPassword = async (
 };
 
 export const loginUser = async (
-  username: string,
+  email: string,
   providedPassword: string
-): Promise<{ message: string; user: SelectUser | null }> => {
+): Promise<{ success: boolean; message: string; user: SelectUser | null }> => {
   // Retrieve user from database
-  const user = await db
-    .select()
-    .from(users)
-    .where(eq(users.username, username));
+  const user = await db.select().from(users).where(eq(users.email, email));
 
   const userData: SelectUser = user[0];
 
   if (!userData) {
-    return { message: "Invalid username or password", user: null };
+    return { success: false, message: "Invalid email or password", user: null };
   }
 
   const isValid = await verifyPassword(userData.password, providedPassword);
-  if (isValid) {
-    // Passwords match
-
-    return { message: "Login Successful", user: userData };
-  } else {
+  if (!isValid) {
     // Passwords do not match
-    return { message: "Invalid username or password", user: null };
+    return { success: false, message: "Invalid email or password", user: null };
   }
+  // Passwords match
+  return { success: true, message: "Login Successful", user: userData };
 };
+
+function assignField<T, K extends keyof T>(target: T, source: T, field: K) {
+  target[field] = source[field];
+}
+
 export const getUser = async (
-  username: string
-): Promise<{ message: string; user: UserData | null }> => {
+  username: string,
+  fields?: Array<keyof UserData>
+): Promise<{
+  message: string;
+  user: Partial<UserData> | null;
+}> => {
   // Retrieve user from database along with
   // all posts and comments made by that user and the comments on those posts
 
@@ -301,7 +305,18 @@ export const getUser = async (
     return { message: "Unsuccessful", user: null };
   }
 
-  return { message: "Success", user: user };
+  if (!fields) return { message: "Success", user: user };
+
+  // Might be useless but i made it so i dont have to fetch the posts and comments of a user when its not always needed
+  // Mainly just experimenting with typescript if its useless just lmk
+  const filteredUser: Partial<UserData> = {};
+  fields.forEach((field) => {
+    if (field in user) {
+      assignField<Partial<UserData>, typeof field>(filteredUser, user, field);
+    }
+  });
+
+  return { message: "Success", user: filteredUser };
 };
 
 export const isUserValid = async (
@@ -354,6 +369,9 @@ export const deleteUser = async (userId: string): Promise<boolean> => {
 
       // Finally, delete the user
       await trx.delete(users).where(eq(users.id, userId));
+      await trx
+        .delete(userPermissions)
+        .where(eq(userPermissions.userId, userId));
     });
 
     return true; // Indicates successful deletion

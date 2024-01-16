@@ -21,7 +21,7 @@ export const POST: APIRoute = async ({ cookies, request }) => {
   if (!payload)
     return new Response(JSON.stringify("Invalid token"), { status: 401 });
 
-  const authorId = payload.sub?.replace(/['"]+/g, "");
+  const authorId = payload.sub;
 
   if (!authorId)
     return new Response(JSON.stringify("Token error"), { status: 401 });

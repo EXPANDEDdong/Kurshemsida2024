@@ -3,6 +3,8 @@ import type { PostData, searchType } from "@utils/types";
 import Post from "../templates/Post";
 import fetchJson from "@utils/fetchJson";
 import User from "../templates/User";
+import UserAdminPage from "@components/templates/UserAdminPage";
+import PostAdminPage from "@components/templates/PostAdminPage";
 
 function debounce<F extends (...args: any[]) => any>(
   func: F,
@@ -32,12 +34,10 @@ function debounce<F extends (...args: any[]) => any>(
   return debouncedFunction;
 }
 
-export default function SearchFeed({
-  currentUser,
+export default function AdminSearchFeed({
   searchQuery,
   searchType,
 }: {
-  currentUser: string;
   searchQuery: string;
   searchType: searchType;
 }) {
@@ -61,7 +61,7 @@ export default function SearchFeed({
         type: searchType,
       };
       const response = await fetchJson(
-        `/api/posts/search?page=${currentPage}`,
+        `/api/admin/admin-search?page=${currentPage}`,
         {
           method: "POST",
           body: JSON.stringify(body),
@@ -115,15 +115,17 @@ export default function SearchFeed({
     <div className="flex flex-col gap-4 items-center overflow-y-auto z-40 relative">
       {searchType === "Users"
         ? items.map((user, index) => (
-            <User
+            <UserAdminPage
               key={index}
+              id={user.id}
+              email={user.email}
               username={user.username}
-              bio={user.description}
+              description={user.description}
               role={user.permissions.role}
             />
           ))
         : items.map((post: PostData, index) => (
-            <Post
+            <PostAdminPage
               key={index}
               id={post.id}
               username={post.user.username}
@@ -131,8 +133,8 @@ export default function SearchFeed({
               title={post.title}
               content={post.content}
               date={post.postedDate}
+              comments={post.comments}
               commentCount={post.comments.length}
-              currentUser={currentUser}
               onFeed={true}
             />
           ))}
@@ -143,7 +145,7 @@ export default function SearchFeed({
       {error && (
         <p>Error: {error instanceof Error ? error.message : "unknown error"}</p>
       )}
-      {!hasMorePosts && <p>No more posts</p>}
+      {!hasMorePosts && <p>No more {searchType}</p>}
 
       <div ref={observerTarget}></div>
     </div>

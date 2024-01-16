@@ -1,12 +1,14 @@
 ---
+import type { userRole } from "@utils/types";
 import SideMenu from "~/components/react-components/SideMenu";
-import { GET } from "~/pages/api/users/loggedinuser";
+interface Props {
+  username: string;
+  role: userRole;
+}
 
-const response = await GET({ ...Astro, ResponseWithEncoding: Response });
-if (!(response instanceof Response)) return Astro.redirect("/404");
-const { username, role } = await response.json();
+const { username, role } = Astro.props;
 ---
 
-<aside class="h-full w-full">
+<aside class="w-full h-full">
   <SideMenu username={username} role={role} client:only="preact" />
 </aside>

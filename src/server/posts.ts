@@ -1,12 +1,7 @@
-import { comments, posts, users } from "@drizzle/schema/posts";
-import db, {
-  type InsertComment,
-  type InsertPost,
-  type InsertUser,
-  type SelectPost,
-} from "~/server/db";
+import { comments, posts } from "@drizzle/schema/posts";
+import db, { type InsertComment, type InsertPost } from "~/server/db";
 import { eq, sql } from "drizzle-orm";
-import type { PostData } from "@utils/types";
+import type { PostData, SinglePostData } from "@utils/types";
 
 export const createPost = async (data: InsertPost) => {
   const insertData = await db.insert(posts).values(data);
@@ -17,6 +12,8 @@ export const createComment = async (data: InsertComment) => {
   const insertData = await db.insert(comments).values(data);
   return;
 };
+
+const getAllPosts = async () => {};
 
 export const getPosts = async (
   limit: number,
@@ -50,10 +47,12 @@ export const getPosts = async (
             columns: {
               username: true,
             },
-          },
-          post: {
-            columns: {
-              id: true,
+            with: {
+              permissions: {
+                columns: {
+                  role: true,
+                },
+              },
             },
           },
         },
@@ -66,6 +65,7 @@ export const getPosts = async (
       postedDate: true,
     },
   });
+
   return posts;
 };
 
@@ -102,7 +102,7 @@ export const getCommentAuthorId = async (commentId: string) => {
 
 export const getSinglePost = async (
   postId: string
-): Promise<PostData | null> => {
+): Promise<SinglePostData | null> => {
   const result = await db.query.posts.findFirst({
     where: eq(posts.id, postId),
     with: {
@@ -141,6 +141,23 @@ export const getSinglePost = async (
           post: {
             columns: {
               id: true,
+              title: true,
+              content: true,
+              postedDate: true,
+            },
+            with: {
+              user: {
+                columns: {
+                  username: true,
+                },
+                with: {
+                  permissions: {
+                    columns: {
+                      role: true,
+                    },
+                  },
+                },
+              },
             },
           },
         },

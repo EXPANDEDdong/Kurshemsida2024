@@ -7,5 +7,5 @@ export const GET: APIRoute = async ({ cookies, redirect }) => {
     maxAge: 0,
     path: "/",
   });
-  return redirect("/login");
+  return new Response(JSON.stringify("yep"), { status: 200 });
 };

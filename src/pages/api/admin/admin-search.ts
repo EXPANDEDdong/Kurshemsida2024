@@ -1,5 +1,5 @@
 import type { APIRoute } from "astro";
-import { searchPosts, searchUsers } from "~/server/misc";
+import { searchPosts, searchUsersAdmin } from "~/server/misc";
 
 export const POST: APIRoute = async ({ request }) => {
   const { query, type }: { query: string; type: "Posts" | "Users" } =
@@ -13,7 +13,7 @@ export const POST: APIRoute = async ({ request }) => {
     const results = await searchPosts(query, limit, offset);
     return new Response(JSON.stringify(results), { status: 200 });
   }
-  const results = await searchUsers(query, limit, offset);
+  const results = await searchUsersAdmin(query, limit, offset);
 
   return new Response(JSON.stringify(results), { status: 200 });
 };

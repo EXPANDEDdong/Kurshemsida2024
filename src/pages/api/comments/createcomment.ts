@@ -1,5 +1,6 @@
 import type { APIRoute } from "astro";
 import { importJWK } from "jose";
+import { getSecret } from "~/server/misc";
 import { createComment } from "~/server/posts";
 import { verifyToken } from "~/server/users";
 
@@ -12,16 +13,12 @@ export const POST: APIRoute = async ({ request, cookies }) => {
   if (!authToken)
     return new Response(JSON.stringify("Not authenticated"), { status: 401 });
 
-  const secretKey = await importJWK({
-    kty: "oct",
-    k: import.meta.env.JWT_SECRET,
-    alg: "HS256",
-  });
+  const secretKey = await getSecret();
 
   const { payload } = await verifyToken(authToken, secretKey);
   if (!payload) return new Response(JSON.stringify("nope"), { status: 401 });
 
-  const authorId = payload.sub?.replace(/['"]+/g, "");
+  const authorId = payload.sub;
   if (!authorId) return new Response(JSON.stringify("nope"), { status: 401 });
 
   await createComment({ targetPostId, authorId, content });

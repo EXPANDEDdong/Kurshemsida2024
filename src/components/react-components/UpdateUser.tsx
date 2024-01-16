@@ -10,54 +10,58 @@ export default function UpdateUser() {
       [e.target.name]: e.target.value,
     });
   };
-  const handleSubmit = async (e: SubmitEvent) => {
+  const handleSubmit = async (e: Event) => {
     e.preventDefault();
     const body = user;
     const result = await fetchJson("/api/users/updateuser", {
       method: "PATCH",
       body: JSON.stringify(body),
     });
+    setUser({ username: "", description: "" });
   };
   return (
     <div
-      className={"flex flex-col gap-4 h-full w-full bg-base-100 rounded-lg p-8"}
+      className={
+        "p-2 w-full flex flex-col gap-4 rounded-lg border border-warning"
+      }
     >
-      <h4 className={"text-xl font-semibold"}>Update user info</h4>
+      <h4 className={"font-semibold text-xl"}>Update User</h4>
       <form onSubmit={handleSubmit}>
-        <div className={"h-full w-full flex flex-col gap-4"}>
-          <div className={"flex flex-col gap-1"}>
+        <div className={"flex flex-col gap-2 w-full"}>
+          <div className={"w-full"}>
             <label className="block text-sm font-bold mb-1" htmlFor="username">
-              Username: {user.username}
+              New username:
             </label>
             <input
               type="text"
-              id={"username"}
               name="username"
               value={user.username}
               onInput={handleInput}
-              className={"input input-bordered"}
-              placeholder={"Username"}
+              placeholder={"User username"}
+              className={"input input-bordered w-full"}
             />
           </div>
-          <div className={"flex flex-col gap-1"}>
-            <label className="block text-sm font-bold mb-1" htmlFor="bio">
-              Description: {user.description}
+          <div className={"w-full"}>
+            <label
+              className="block text-sm font-bold mb-1"
+              htmlFor="description"
+            >
+              New description:
             </label>
             <textarea
               name="description"
-              id={"bio"}
               value={user.description}
               onInput={handleInput}
-              className={"textarea textarea-bordered resize-none"}
-              maxLength={150}
-              placeholder={"Bio"}
+              placeholder={"User description"}
+              className={"resize-none textarea textarea-bordered w-full"}
             />
-            <p className="block text-sm font-bold mb-1">
-              {user.description.length}/150
-            </p>
           </div>
-          <button type={"submit"} className={"btn btn-info"}>
-            Update
+          <div className={"divider"}></div>
+          <button
+            className={"btn btn-block btn-warning btn-outline"}
+            type={"submit"}
+          >
+            Update User
           </button>
         </div>
       </form>

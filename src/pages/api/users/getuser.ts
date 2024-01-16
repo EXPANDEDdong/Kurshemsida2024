@@ -11,7 +11,7 @@ export const POST: APIRoute = async ({ request, redirect }) => {
   const userBody = {
     username: user?.username,
     description: user?.description,
-    role: user?.permissions.role,
+    role: user?.permissions?.role,
     posts: user?.posts,
     comments: user?.comments,
   };

@@ -20,7 +20,7 @@ export const DELETE: APIRoute = async ({ request, cookies }) => {
   const { payload } = await verifyToken(authToken, secretKey);
   if (!payload) return new Response(JSON.stringify("Nope"), { status: 403 });
 
-  const userId = String(payload.sub?.replace(/['"]+/g, ""));
+  const userId = String(payload.sub);
 
   const { isValid } = await isUserValid(userId, email, password);
 

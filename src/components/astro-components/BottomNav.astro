@@ -1,13 +1,15 @@
 ---
-import { GET } from "~/pages/api/users/loggedinuser";
+import type { userRole } from "@utils/types";
 import Home from "~/components/react-components/icons/Home";
 import Search from "~/components/react-components/icons/Search";
 import UserIcon from "~/components/react-components/icons/UserIcon";
 
-const response = await GET({ ...Astro, ResponseWithEncoding: Response });
-if (!(response instanceof Response)) return Astro.redirect("/404");
-const { username, role } = await response.json();
+interface Props {
+  username: string;
+  role: userRole;
+}
 
+const { username, role } = Astro.props;
 const path = Astro.url.pathname;
 ---
 
@@ -27,6 +29,6 @@ const path = Astro.url.pathname;
     class={path.includes(`/user/${username}`) ? "active" : ""}
     data-astro-prefetch
   >
-    <UserIcon />
+    <UserIcon height={24} width={24} />
   </a>
 </div>

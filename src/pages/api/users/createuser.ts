@@ -1,6 +1,7 @@
 import { createUser, generateToken, type JwtPayload } from "~/server/users";
 import type { APIRoute } from "astro";
 import { importJWK } from "jose";
+import { getSecret } from "~/server/misc";
 
 function isValidUsername(username: string) {
   const regex = /^[A-Za-z0-9]{4,36}$/;
@@ -46,22 +47,20 @@ export const POST: APIRoute = async ({ cookies, request }) => {
   }
 
   const payload: JwtPayload = {
-    sub: JSON.stringify(user.id),
+    sub: user.id,
     exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 7,
     iat: Math.floor(Date.now() / 1000),
     customData: { username: user.username },
   };
 
-  const secretKey = await importJWK({
-    kty: "oct",
-    k: import.meta.env.JWT_SECRET,
-    alg: "HS256",
-  });
+  const secretKey = await getSecret();
 
   const token = await generateToken(payload, secretKey);
+
   cookies.set("authToken", token, {
     httpOnly: true,
     secure: true,
+    sameSite: "lax",
     path: "/",
     maxAge: 60 * 60 * 24 * 7,
   });

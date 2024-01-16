@@ -2,25 +2,25 @@
 import Layout from "../layouts/Layout.astro";
 import fetchJson from "@utils/fetchJson";
 import TestFeed from "@components/react-components/TestFeed";
-import { GET } from "~/pages/api/users/loggedinuser";
 import PostForm from "@components/react-components/PostForm";
+import type { PostData } from "@utils/types";
+import { getCurrentUser } from "~/server/misc";
 const origin = Astro.url.origin;
 
-const response = await GET({ ...Astro, ResponseWithEncoding: Response });
-if (!(response instanceof Response)) return Astro.redirect("/404");
-const { username } = await response.json();
-const currentUser = username;
+const { user } = await getCurrentUser(Astro.request);
+if (!user) {
+  return Astro.redirect(`${origin}/login`);
+}
+
 const result = await fetchJson(`${origin}/api/posts/page?page=0`);
-if (!result) return Astro.redirect("/404");
+// if (!result) return Astro.redirect("/404");
 ---
 
-<Layout title="Balls">
-  <TestFeed initialFeed={result} currentUser={currentUser} client:load />
+<Layout title="Home">
+  <TestFeed initialFeed={result} currentUser={user.username} client:load />
   <div class="toast toast-end toast-bottom mb-16 min-[900px]:mb-0 z-40">
     <PostForm client:visible />
   </div>
 
   <div class="h-32"></div>
 </Layout>
-
-<style></style>

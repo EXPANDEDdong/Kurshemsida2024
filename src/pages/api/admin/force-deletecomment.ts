@@ -1,13 +1,12 @@
-import { createPost, deletePost, getPostAuthorId } from "~/server/posts";
 import type { APIRoute } from "astro";
 import { importJWK } from "jose";
-import { verifyToken } from "~/server/users";
 import { getSecret } from "~/server/misc";
+import { getCommentAuthorId, deleteComment } from "~/server/posts";
+import { isAdmin, verifyToken } from "~/server/users";
 
-export const DELETE: APIRoute = async ({ cookies, request }) => {
+export const DELETE: APIRoute = async ({ request, cookies }) => {
   const body = await request.json();
-  const postId = String(body.id);
-  const authorId = String(await getPostAuthorId(postId));
+  const commentId = String(body.id);
 
   const authToken = cookies.get("authToken")?.value;
   if (!authToken)
@@ -19,11 +18,15 @@ export const DELETE: APIRoute = async ({ cookies, request }) => {
   if (!payload) return new Response(JSON.stringify("nope"), { status: 401 });
 
   const currentId = payload.sub;
-  if (currentId == authorId) {
-    await deletePost(postId);
-    return new Response(JSON.stringify(body), {
-      status: 200,
+
+  const isAuthorized = await isAdmin(currentId);
+
+  if (!isAuthorized)
+    return new Response(JSON.stringify("Does not have required authority"), {
+      status: 403,
     });
-  }
-  return new Response(JSON.stringify(body));
+  await deleteComment(commentId);
+  return new Response(JSON.stringify(body), {
+    status: 200,
+  });
 };

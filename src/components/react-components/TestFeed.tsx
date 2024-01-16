@@ -53,10 +53,15 @@ export default function TestFeed({
 
     try {
       const currentPage = pageRef.current;
-      const response = await fetchJson(`/api/posts/page?page=${currentPage}`);
+      const response = await fetchJson<PostData[]>(
+        `/api/posts/page?page=${currentPage}`
+      );
+      if (!response) {
+        throw new Error("Error fetching posts.");
+      }
 
       // Update to check if more posts are available
-      if (response.length < 10 || response.Length === 0) {
+      if (response.length < 10) {
         setHasMorePosts(false);
       }
 
@@ -99,7 +104,7 @@ export default function TestFeed({
   }, []);
 
   return (
-    <div className="flex flex-col gap-4 items-center overflow-auto z-40 relative">
+    <div className="flex flex-col gap-4 items-center overflow-y-auto z-40 relative">
       {items.map((post, index) => (
         <Post
           key={index}

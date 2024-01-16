@@ -10,5 +10,7 @@ export default defineConfig({
   integrations: [tailwind(), sitemap(), preact()],
   output: "server",
   adapter: vercel(),
-  prefetch: true
+  prefetch: {
+    prefetchAll: false
+  }
 });

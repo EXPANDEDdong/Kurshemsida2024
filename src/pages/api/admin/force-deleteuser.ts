@@ -1,8 +1,9 @@
 import type { APIRoute } from "astro";
 import { importJWK } from "jose";
+import { getSecret } from "~/server/misc";
 import { deleteUser, isAdmin, verifyToken } from "~/server/users";
 
-export const POST: APIRoute = async ({ request, cookies }) => {
+export const DELETE: APIRoute = async ({ request, cookies }) => {
   const body = await request.json();
   const id = String(body.id);
 
@@ -10,22 +11,18 @@ export const POST: APIRoute = async ({ request, cookies }) => {
   if (!authToken)
     return new Response(JSON.stringify("Not autheticated"), { status: 401 });
 
-  const secretKey = await importJWK({
-    kty: "oct",
-    k: import.meta.env.JWT_SECRET,
-    alg: "HS256",
-  });
+  const secretKey = await getSecret();
 
   const { payload } = await verifyToken(authToken, secretKey);
   if (!payload)
     return new Response(JSON.stringify("Invalid token"), { status: 401 });
 
-  const authorId = payload.sub?.replace(/['"]+/g, "");
+  const currentId = payload.sub;
 
-  if (!authorId)
+  if (!currentId)
     return new Response(JSON.stringify("Token error"), { status: 401 });
 
-  const isAuthorized = await isAdmin(authorId);
+  const isAuthorized = await isAdmin(currentId);
 
   if (!isAuthorized)
     return new Response(JSON.stringify("Does not have required authority"), {

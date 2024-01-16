@@ -1,5 +1,5 @@
 import type { APIRoute } from "astro";
-import { importJWK } from "jose";
+import { getSecret } from "~/server/misc";
 import {
   updateUser,
   verifyToken,
@@ -21,11 +21,7 @@ export const PATCH: APIRoute = async ({ cookies, request }) => {
     });
   }
 
-  const secretKey = await importJWK({
-    kty: "oct",
-    k: import.meta.env.JWT_SECRET,
-    alg: "HS256",
-  });
+  const secretKey = await getSecret();
 
   const { payload } = await verifyToken(authToken, secretKey);
   if (!payload || !payload.sub) {
@@ -61,7 +57,7 @@ export const PATCH: APIRoute = async ({ cookies, request }) => {
     ? description.replace(/<[^>]*>?/gm, "")
     : null;
 
-  const userId = payload.sub.replace(/['"]+/g, "");
+  const userId = payload.sub;
   const updatedUsername = await updateUser(
     userId,
     username,
@@ -72,7 +68,7 @@ export const PATCH: APIRoute = async ({ cookies, request }) => {
   }
 
   const newPayload: JwtPayload = {
-    sub: JSON.stringify(userId),
+    sub: userId,
     exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 7,
     iat: Math.floor(Date.now() / 1000),
     customData: {
@@ -84,6 +80,7 @@ export const PATCH: APIRoute = async ({ cookies, request }) => {
   cookies.set("authToken", token, {
     httpOnly: true,
     secure: true,
+    sameSite: "lax",
     path: "/",
     maxAge: 60 * 60 * 24 * 7,
   });

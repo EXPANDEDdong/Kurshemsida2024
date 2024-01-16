@@ -1,28 +1,21 @@
 ---
 import Layout from "@layouts/Layout.astro";
-import fetchJson from "@utils/fetchJson";
 import Post from "@components/templates/Post";
 import CommentsList from "@components/react-components/CommentsList";
-import { importJWK } from "jose";
-import { verifyToken } from "~/server/users";
-import { GET } from "~/pages/api/users/loggedinuser";
+import { getSinglePost } from "~/server/posts";
+import { getCurrentUser } from "~/server/misc";
 const { post } = Astro.params;
 const id = String(post);
-const body = {
-  id: id,
-};
-const origin = Astro.url.origin;
-const postPage = await fetchJson(`${origin}/api/posts/singlePost`, {
-  method: "POST",
-  body: JSON.stringify(body),
-});
+
+const postPage = await getSinglePost(id);
 if (!postPage) {
   return Astro.redirect("/404");
 }
-const response = await GET({ ...Astro, ResponseWithEncoding: Response });
-if (!(response instanceof Response)) return Astro.redirect("/404");
-const { username } = await response.json();
-const currentUser = username;
+const result = await getCurrentUser(Astro.request);
+if (!result || !result.user) {
+  return Astro.redirect("/login");
+}
+const { username } = result.user;
 ---
 
 <Layout title={postPage.title}>
@@ -38,7 +31,7 @@ const currentUser = username;
             content={postPage.content}
             date={postPage.postedDate}
             commentCount={postPage.comments.length}
-            currentUser={currentUser}
+            currentUser={username}
             onFeed={false}
             client:load
           />
@@ -47,7 +40,7 @@ const currentUser = username;
     </div>
     <CommentsList
       onUserPage={false}
-      currentUser={currentUser}
+      currentUser={username}
       comments={postPage.comments}
       client:load
     />

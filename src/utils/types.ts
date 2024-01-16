@@ -4,7 +4,16 @@ export type PostData = {
   content: string;
   postedDate: Date;
   user: Pick<UserData, "username" | "permissions">;
-  comments: Array<Pick<CommentData["post"], "id">>;
+  comments: Array<Omit<CommentData, "post">>;
+};
+
+export type SinglePostData = {
+  id: string;
+  title: string;
+  content: string;
+  postedDate: Date;
+  user: Pick<UserData, "username" | "permissions">;
+  comments: Array<CommentData>;
 };
 
 export type CommentData = {
@@ -25,9 +34,9 @@ export type UserData = {
   };
 };
 
-export type searchType = "Posts" | "Users";
-
 export type userRole = "user" | "admin";
+
+export type searchType = "Posts" | "Users";
 
 export type PostProps = {
   id: string;
