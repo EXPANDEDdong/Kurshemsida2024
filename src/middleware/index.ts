@@ -5,7 +5,7 @@ import { isAdmin, verifyToken } from "~/server/users";
 
 const publicRoutes = new Set(["/", "/login", "/create", "/404"]);
 
-const adminRoutes = new Set(["/admin", "/admin/users", "/admin/posts"]);
+const adminRoutes = new Set(["/admin", "/admin/users", "/admin/manage"]);
 
 export const onRequest = defineMiddleware(async (context, next) => {
   if (
