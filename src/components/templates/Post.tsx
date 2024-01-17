@@ -7,6 +7,8 @@ import { MessagesSquare } from "lucide-preact";
 import type { PostProps } from "@utils/types";
 import { createRef } from "preact";
 
+import { commentState } from "~/store";
+
 export const checkCurrentUser = (user: string, user2: string): boolean => {
   const isCurrent: boolean = user2 == user;
   return isCurrent;
@@ -99,7 +101,10 @@ export default function Post({
           </div>
           {!onFeed && (
             <>
-              <CommentForm postId={id} />
+              <CommentForm
+                postId={id}
+                onNewComment={() => commentState.set(Math.random())}
+              />
             </>
           )}
         </div>

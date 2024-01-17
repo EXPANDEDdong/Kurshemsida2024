@@ -1,8 +1,30 @@
 import { useEffect, useState } from "preact/hooks";
 import type { CommentData } from "@utils/types";
 import Comment from "@components/templates/Comment";
+import { commentState } from "~/store";
+import { useStore } from "@nanostores/preact";
 
 export default function CommentsFeed({
+  comments,
+  currentUser,
+  onUserPage,
+}: {
+  comments: CommentData[];
+  currentUser: string;
+  onUserPage: boolean;
+}) {
+  const $state = useStore(commentState);
+  return (
+    <List
+      key={$state}
+      comments={comments}
+      currentUser={currentUser}
+      onUserPage={onUserPage}
+    />
+  );
+}
+
+function List({
   comments,
   currentUser,
   onUserPage,
@@ -19,6 +41,7 @@ export default function CommentsFeed({
   async function getComments(comments: CommentData[]) {
     setComments(comments);
   }
+
   return (
     <div className="flex flex-col gap-4 items-center bg-base-300">
       {commentsList.map((comm: CommentData, index) => (

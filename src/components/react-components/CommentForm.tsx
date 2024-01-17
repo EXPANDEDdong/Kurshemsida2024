@@ -3,7 +3,13 @@ import { createRef } from "preact";
 import { useState } from "preact/hooks";
 import { MessagesSquare, PlusCircle } from "lucide-preact";
 
-export default function CommentForm({ postId }: { postId: string }) {
+export default function CommentForm({
+  postId,
+  onNewComment,
+}: {
+  postId: string;
+  onNewComment: (comment: { content: string; targetId: string }) => void;
+}) {
   const [content, setContent] = useState("");
 
   const dialogRef = createRef();
@@ -34,6 +40,7 @@ export default function CommentForm({ postId }: { postId: string }) {
       method: "POST",
       body: JSON.stringify(body),
     });
+    onNewComment(result);
   };
 
   return (

@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from "preact/hooks";
 import type { PostData } from "@utils/types";
 import Post from "../templates/Post";
 import fetchJson from "@utils/fetchJson";
+import { useStore } from "@nanostores/preact";
+import { mainFeedState, initialFeedDidLoad } from "~/store";
 
 function debounce<F extends (...args: any[]) => any>(
   func: F,
@@ -38,12 +40,41 @@ export default function TestFeed({
   initialFeed: PostData[];
   currentUser: string;
 }) {
+  const $didLoadInitial = useStore(initialFeedDidLoad);
+
+  if ($didLoadInitial) {
+    initialFeed = [];
+  }
+  useEffect(() => {
+    initialFeedDidLoad.set(true);
+  }, []);
+
+  const $feedState = useStore(mainFeedState);
+
+  return (
+    <Feed
+      key={$feedState}
+      initialFeed={initialFeed}
+      currentUser={currentUser}
+    />
+  );
+}
+
+function Feed({
+  initialFeed,
+  currentUser,
+}: {
+  initialFeed: PostData[];
+  currentUser: string;
+}) {
   const [items, setItems] = useState<PostData[]>(initialFeed);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<any>(null);
   const [hasMorePosts, setHasMorePosts] = useState(true);
 
-  const pageRef = useRef(1);
+  const $didLoadInitial = useStore(initialFeedDidLoad);
+
+  const pageRef = useRef($didLoadInitial ? 0 : 1);
 
   const fetchData = async (): Promise<void> => {
     if (!hasMorePosts) return;

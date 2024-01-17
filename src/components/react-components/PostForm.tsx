@@ -2,6 +2,7 @@ import fetchJson from "@utils/fetchJson";
 import { createRef } from "preact";
 import { useState } from "preact/hooks";
 import { MessageSquarePlus, PlusCircle } from "lucide-preact";
+import { mainFeedState } from "~/store";
 
 export default function PostForm() {
   const [post, setPost] = useState({ title: "", content: "" });
@@ -26,6 +27,11 @@ export default function PostForm() {
         console.error("Error submitting form:", error);
       }
       setPost({ title: "", content: "" });
+      if (dialogRef.current) {
+        dialogRef.current.close();
+      }
+
+      mainFeedState.set(Math.random());
     } else {
       alert("Both fields must be filled");
     }

@@ -1,5 +1,6 @@
 import type { APIRoute } from "astro";
 import { importJWK } from "jose";
+import { getSecret } from "~/server/misc";
 import { deleteUser, isUserValid, verifyToken } from "~/server/users";
 
 export const DELETE: APIRoute = async ({ request, cookies }) => {
@@ -11,11 +12,7 @@ export const DELETE: APIRoute = async ({ request, cookies }) => {
   if (!authToken)
     return new Response(JSON.stringify("Not logged in."), { status: 401 });
 
-  const secretKey = await importJWK({
-    kty: "oct",
-    k: import.meta.env.JWT_SECRET,
-    alg: "HS256",
-  });
+  const secretKey = await getSecret();
 
   const { payload } = await verifyToken(authToken, secretKey);
   if (!payload) return new Response(JSON.stringify("Nope"), { status: 403 });

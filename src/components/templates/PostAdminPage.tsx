@@ -109,12 +109,6 @@ export default function PostAdminPage({
               <p>{commentCount}</p>
             </div>
           </div>
-
-          {!onFeed && (
-            <>
-              <CommentForm postId={id} />
-            </>
-          )}
         </div>
       </div>
 
