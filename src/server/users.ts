@@ -376,8 +376,8 @@ export const deleteUser = async (userId: string): Promise<boolean> => {
 
     return true; // Indicates successful deletion
   } catch (error) {
-    console.error("Error deleting user:", error); // Improved error logging
-    return false; // Indicates an error occurred
+    console.error("Error deleting user:", error);
+    return false;
   }
 };
 

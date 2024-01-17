@@ -21,22 +21,18 @@ const { username } = result.user;
 <Layout title={postPage.title}>
   <div class="w-full">
     <div class="w-full bg-base-300 shadow-xl mb-8 p-4 grid">
-      {
-        postPage && (
-          <Post
-            username={postPage.user.username}
-            id={postPage.id}
-            role={postPage.user.permissions.role}
-            title={postPage.title}
-            content={postPage.content}
-            date={postPage.postedDate}
-            commentCount={postPage.comments.length}
-            currentUser={username}
-            onFeed={false}
-            client:load
-          />
-        )
-      }
+      <Post
+        username={postPage.user.username}
+        id={postPage.id}
+        role={postPage.user.permissions.role}
+        title={postPage.title}
+        content={postPage.content}
+        date={postPage.postedDate}
+        commentCount={postPage.comments.length}
+        currentUser={username}
+        onFeed={false}
+        client:load
+      />
     </div>
     <CommentsList
       onUserPage={false}

@@ -3,17 +3,15 @@ import Layout from "../layouts/Layout.astro";
 import fetchJson from "@utils/fetchJson";
 import TestFeed from "@components/react-components/TestFeed";
 import PostForm from "@components/react-components/PostForm";
-import type { PostData } from "@utils/types";
 import { getCurrentUser } from "~/server/misc";
 const origin = Astro.url.origin;
 
 const { user } = await getCurrentUser(Astro.request);
 if (!user) {
-  return Astro.redirect(`${origin}/login`);
+  return Astro.redirect(`/login`);
 }
 
 const result = await fetchJson(`${origin}/api/posts/page?page=0`);
-// if (!result) return Astro.redirect("/404");
 ---
 
 <Layout title="Home">

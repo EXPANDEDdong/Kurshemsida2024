@@ -1,6 +1,5 @@
 import { loginUser, type JwtPayload, generateToken } from "~/server/users";
 import type { APIRoute } from "astro";
-import { importJWK } from "jose";
 import { getSecret } from "~/server/misc";
 
 export const POST: APIRoute = async ({ cookies, request }) => {
