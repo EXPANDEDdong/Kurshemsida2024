@@ -1,7 +1,6 @@
 import type { APIRoute } from "astro";
-import { importJWK } from "jose";
 import { getSecret } from "~/server/misc";
-import { getCommentAuthorId, deleteComment } from "~/server/posts";
+import { deleteComment } from "~/server/posts";
 import { isAdmin, verifyToken } from "~/server/users";
 
 export const DELETE: APIRoute = async ({ request, cookies }) => {
