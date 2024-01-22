@@ -1,4 +1,4 @@
-import { comments, posts } from "@drizzle/schema/posts";
+import { comments, posts } from "@drizzle/schema/schema";
 import db, { type InsertComment, type InsertPost } from "~/server/db";
 import { eq, sql } from "drizzle-orm";
 import type { PostData, SinglePostData } from "@utils/types";

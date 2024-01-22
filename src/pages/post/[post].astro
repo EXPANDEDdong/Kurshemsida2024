@@ -15,7 +15,7 @@ const result = await getCurrentUser(Astro.request);
 if (!result || !result.user) {
   return Astro.redirect("/login");
 }
-const { username } = result.user;
+const { username, role } = result.user;
 ---
 
 <Layout title={postPage.title}>
@@ -36,6 +36,7 @@ const { username } = result.user;
     </div>
     <CommentsList
       onUserPage={false}
+      currentRole={role}
       currentUser={username}
       comments={postPage.comments}
       client:load

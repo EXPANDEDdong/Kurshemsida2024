@@ -1,5 +1,4 @@
 import { defineMiddleware } from "astro:middleware";
-import { importJWK } from "jose";
 import { getSecret } from "~/server/misc";
 import { isAdmin, verifyToken } from "~/server/users";
 

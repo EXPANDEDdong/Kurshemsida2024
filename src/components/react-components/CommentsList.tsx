@@ -1,15 +1,17 @@
 import { useEffect, useState } from "preact/hooks";
-import type { CommentData } from "@utils/types";
+import type { CommentData, userRole } from "@utils/types";
 import Comment from "@components/templates/Comment";
-import { commentState } from "~/store";
+import { commentState, newComment } from "~/store";
 import { useStore } from "@nanostores/preact";
 
 export default function CommentsFeed({
   comments,
   currentUser,
+  currentRole,
   onUserPage,
 }: {
   comments: CommentData[];
+  currentRole?: userRole;
   currentUser: string;
   onUserPage: boolean;
 }) {
@@ -18,6 +20,7 @@ export default function CommentsFeed({
     <List
       key={$state}
       comments={comments}
+      currentRole={currentRole}
       currentUser={currentUser}
       onUserPage={onUserPage}
     />
@@ -27,9 +30,11 @@ export default function CommentsFeed({
 function List({
   comments,
   currentUser,
+  currentRole,
   onUserPage,
 }: {
   comments: CommentData[];
+  currentRole?: userRole;
   currentUser: string;
   onUserPage: boolean;
 }) {
@@ -37,8 +42,44 @@ function List({
     getComments(comments);
   }, []);
   const [commentsList, setComments] = useState<CommentData[]>([]);
+  const $newComment = useStore(newComment);
 
-  async function getComments(comments: CommentData[]) {
+  function getComments(comments: CommentData[]) {
+    if ($newComment.content !== null && $newComment.targetId !== null) {
+      if (!currentRole) return;
+      {
+        /* This looks a little messy but it allowsto display the latest comment at the top of the comment list without fetching anything again.
+      It simply puts the new comment in a nanostore and since the list loads the comment on render, i rerender the component when a new comment is posted
+      and if $newComment isnt empty it adds the values of that to the list. */
+      }
+      const newComm: CommentData[] = [
+        {
+          id: "newcomm",
+          content: $newComment.content,
+          post: {
+            id: $newComment.targetId,
+            content: "null",
+            title: "null",
+            user: {
+              username: "null",
+              permissions: {
+                role: "user",
+              },
+            },
+            postedDate: new Date(),
+          },
+          user: {
+            username: currentUser,
+            permissions: {
+              role: currentRole,
+            },
+          },
+          postedDate: new Date(),
+        },
+      ];
+      setComments([...newComm, ...comments]);
+      return;
+    }
     setComments(comments);
   }
 

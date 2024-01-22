@@ -40,6 +40,7 @@ export default function CommentForm({
       method: "POST",
       body: JSON.stringify(body),
     });
+    closeDialog();
     onNewComment(result);
   };
 

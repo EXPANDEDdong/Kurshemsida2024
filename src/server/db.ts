@@ -2,8 +2,8 @@ import { connect } from "@planetscale/database";
 import "dotenv/config";
 import { drizzle } from "drizzle-orm/planetscale-serverless";
 import { type InferSelectModel, type InferInsertModel } from "drizzle-orm";
-import type { comments, posts, users } from "@drizzle/schema/posts";
-import * as schema from "@drizzle/schema/posts";
+import type { comments, posts, users } from "@drizzle/schema/schema";
+import * as schema from "@drizzle/schema/schema";
 
 const connection = connect({
   host: import.meta.env.DATABASE_HOST,

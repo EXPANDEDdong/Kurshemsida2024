@@ -1,5 +1,10 @@
 import crypto from "crypto";
-import { comments, posts, userPermissions, users } from "@drizzle/schema/posts";
+import {
+  comments,
+  posts,
+  userPermissions,
+  users,
+} from "@drizzle/schema/schema";
 import db, { type InsertUser, type SelectUser } from "~/server/db";
 import { eq } from "drizzle-orm";
 import {

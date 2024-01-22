@@ -13,7 +13,7 @@ export default function CreateForm() {
     });
   };
 
-  const handleSubmit = async (event: any) => {
+  const handleSubmit = async (event: Event) => {
     event.preventDefault();
     const body = {
       email: user.email,
@@ -28,6 +28,7 @@ export default function CreateForm() {
           body: JSON.stringify(body),
         }
       );
+      console.log(result);
 
       if (!result) {
         setError({ isError: true, message: "Unknown Error." });

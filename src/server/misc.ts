@@ -1,5 +1,10 @@
 import db from "~/server/db";
-import { comments, posts, userPermissions, users } from "@drizzle/schema/posts";
+import {
+  comments,
+  posts,
+  userPermissions,
+  users,
+} from "@drizzle/schema/schema";
 import { eq, like, sql } from "drizzle-orm";
 import type { PostData, UserData, userRole } from "@utils/types";
 import { getUser, verifyToken } from "~/server/users.js";

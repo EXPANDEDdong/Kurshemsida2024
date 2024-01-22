@@ -12,10 +12,12 @@ export default async function fetchJson<T = any>(
     };
     const mergedOptions = deepmerge(defaultOptions, options ?? {});
     const response = await fetch(url, mergedOptions);
-    if (!response.ok) {
+    const responseJson = await response.json();
+    const { success } = responseJson;
+    if (!response.ok && success === undefined) {
       throw new Error(`Fetch failed with status: ${response.status}`);
     }
-    return (await response.json()) as T;
+    return responseJson as T;
   } catch (error) {
     console.error("Error fetching JSON:", error);
     return null;
