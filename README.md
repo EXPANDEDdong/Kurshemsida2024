@@ -1,5 +1,9 @@
 ## Project Structure
 
+
+
+[![More on Astro](./public/astro-icon-light-gradient.svg)](https://astro.build/)
+
 ```text
 /
 ├── .gitattributes
@@ -12,10 +16,11 @@
 ├── drizzle.config.ts
 ├── drizzle/
 │   ├── migrations/
-│   │   └── meta/
-│   │       └── _journal.json
+│   │   ├── meta/
+│   │   │   └── _journal.json
+│   │   └── tables.sql
 │   └── schema/
-│       └── posts.ts
+│       └── schema.ts
 ├── package-lock.json
 ├── package.json
 ├── public/
