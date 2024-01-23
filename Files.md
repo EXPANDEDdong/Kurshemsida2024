@@ -47,12 +47,128 @@
   <br />
   <details>
     <summary><code>/src/components/</code></summary>
+    <h2>Components Directory</h2>
+    <p style="font-size: 18px">
+      The components directory contains components written in both astro and
+      preact that are used and reused around the application to allow for
+      advanced client-side interactivity and state management.
+    </p>
+    |
+    <details>
+      <summary>
+        <code
+          >/src/components/react-components/<span style="color: #2aa4d4"
+            >SearchFeed.tsx</span
+          ></code
+        >
+      </summary>
+      <hr>
+      <h2>SearchFeed</h2>
+      <p style="font-size: 18px">
+        The SearchFeed.tsx file serves as a key component in the project,
+        providing a feed of posts on the search page that dynamically responds
+        to user search queries. Here's a detailed breakdown of its
+        functionality:
+      </p>
+      <ol>
+        <li>
+          <h3>Role of SearchFeed.tsx:</h3>
+          <ul>
+            <li>
+              <p style="font-size: 16px">
+                The file encapsulates the logic for rendering the feed of posts
+                on the search page based on user queries.
+              </p>
+            </li>
+          </ul>
+        </li>
+        <li>
+          <h3>Integration with SearchPage.tsx:</h3>
+          <ul>
+            <li>
+              <p style="font-size: 16px">
+                This component is embedded within the SearchPage.tsx file.
+              </p>
+            </li>
+            <li>
+              <p style="font-size: 16px">
+                SearchPage.tsx is responsible for extracting the search query
+                and type from the search bar and passing them as props to the
+                SearchFeed.tsx component.
+              </p>
+            </li>
+          </ul>
+        </li>
+        <li>
+          <h3>API Interaction:</h3>
+          <ul>
+            <li>
+              <p style="font-size: 16px">
+                The SearchFeed.tsx component utilizes the search query obtained
+                from SearchPage.tsx to make a fetch call to the search API
+                route.
+              </p>
+            </li>
+            <li>
+              <p style="font-size: 16px">
+                The fetch call includes the query and type parameters, fetching
+                the first 10 results that match the search criteria.
+              </p>
+            </li>
+          </ul>
+        </li>
+        <li>
+          <h3>Dynamic Loading of Additional Posts:</h3>
+          <ul>
+            <li>
+              <p style="font-size: 16px">
+                If the search query yields more than 10 results, and the user
+                scrolls to the 10th post on the page, an intersection observer
+                API is employed.
+              </p>
+            </li>
+            <li>
+              <p style="font-size: 16px">
+                The intersection observer detects when the user has reached the
+                10th post and triggers the loading of the next 10 posts,
+                ensuring a seamless browsing experience.
+              </p>
+            </li>
+          </ul>
+        </li>
+        <li>
+          <h3>Debouncing Fetch Calls:</h3>
+          <ul>
+            <li>
+              <p style="font-size: 16px">
+                The file features a debounce function. Its purpose is to prevent
+                the fetch function from being called too rapidly.
+              </p>
+            </li>
+            <li>
+              <p style="font-size: 16px">
+                This debounce mechanism helps avoid issues such as fetching
+                duplicates in quick succession, ensuring a more controlled and
+                optimized feed retrieval.
+              </p>
+            </li>
+          </ul>
+        </li>
+      </ol>
+      <hr>
+    </details>
   </details>
   <br />
   <details>
     <summary>
       <code>/src/<span style="color: #2aa4d4">layouts</span>/</code>
     </summary>
+    <h2>Layouts Directory</h2>
+    <p style="font-size: 18px">
+      The layouts directory contains files that are essentially wrapped around
+      individual pages in the application. Thereby removing the need to repeat
+      code that is reused across the site.
+    </p>
   </details>
   <br />
   <details>
@@ -194,6 +310,8 @@
     </p>
   </details>
 </details>
+
+
 
 
 ---

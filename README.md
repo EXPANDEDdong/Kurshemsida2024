@@ -4,7 +4,7 @@
 
 [![More on Astro](./public/astro-icon-light-gradient.svg)](https://astro.build/)
 
-```text
+```lua
 /
 ├── .gitattributes
 ├── .gitignore
@@ -137,4 +137,4 @@
 └── .vscode/
     ├── extensions.json
     └── launch.json
-```s
+```
