@@ -1,6 +1,4 @@
-import { useEffect, useState } from "preact/hooks";
 import DateTime from "../blocks/TimeSince";
-import { checkCurrentUser } from "./Post";
 import fetchJson from "@utils/fetchJson";
 import type { CommentProps } from "@utils/types";
 

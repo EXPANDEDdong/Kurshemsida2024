@@ -1,4 +1,3 @@
-import fetchJson from "@utils/fetchJson";
 import { useEffect, useState } from "preact/hooks";
 import type { PostData, userRole } from "@utils/types";
 import Post from "@components/templates/Post";

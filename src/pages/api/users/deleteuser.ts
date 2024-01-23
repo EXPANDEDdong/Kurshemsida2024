@@ -1,5 +1,4 @@
 import type { APIRoute } from "astro";
-import { importJWK } from "jose";
 import { getSecret } from "~/server/misc";
 import { deleteUser, isUserValid, verifyToken } from "~/server/users";
 
@@ -15,7 +14,8 @@ export const DELETE: APIRoute = async ({ request, cookies }) => {
   const secretKey = await getSecret();
 
   const { payload } = await verifyToken(authToken, secretKey);
-  if (!payload) return new Response(JSON.stringify("Nope"), { status: 403 });
+  if (!payload)
+    return new Response(JSON.stringify("Invalid token"), { status: 403 });
 
   const userId = String(payload.sub);
 

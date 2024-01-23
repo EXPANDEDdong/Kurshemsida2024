@@ -32,6 +32,7 @@ export default function DeleteUser() {
       method: "DELETE",
       body: JSON.stringify(userInfo),
     });
+    window.location.replace(`${window.location.origin}/login`);
   };
   return (
     <div>

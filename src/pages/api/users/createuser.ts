@@ -1,6 +1,5 @@
 import { createUser, generateToken, type JwtPayload } from "~/server/users";
 import type { APIRoute } from "astro";
-import { importJWK } from "jose";
 import { getSecret } from "~/server/misc";
 
 function isValidUsername(username: string) {

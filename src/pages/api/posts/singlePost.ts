@@ -1,4 +1,4 @@
-import { getPosts, getSinglePost } from "~/server/posts";
+import { getSinglePost } from "~/server/posts";
 import type { APIRoute } from "astro";
 
 export const POST: APIRoute = async ({ request, redirect }) => {

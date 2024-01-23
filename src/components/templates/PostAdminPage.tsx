@@ -1,10 +1,8 @@
-import CommentForm from "@components/react-components/CommentForm";
-import { useEffect, useState } from "preact/hooks";
 import DateTime from "../blocks/TimeSince";
 import fetchJson from "@utils/fetchJson";
 import { MessagesSquare, X } from "lucide-preact";
 
-import type { PostData, PostProps } from "@utils/types";
+import type { PostProps } from "@utils/types";
 import { createRef } from "preact";
 import CommentAdminPage from "./CommentAdminPage";
 
@@ -21,7 +19,6 @@ export default function PostAdminPage({
   content,
   date,
   comments,
-  onFeed,
   commentCount,
 }: Omit<PostProps, "currentUser"> & {
   comments: any[];

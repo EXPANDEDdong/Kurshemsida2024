@@ -4,7 +4,12 @@ import { isAdmin, verifyToken } from "~/server/users";
 
 const publicRoutes = new Set(["/", "/login", "/create", "/404"]);
 
-const adminRoutes = new Set(["/admin", "/admin/users", "/admin/manage"]);
+const adminRoutes = new Set([
+  "/admin",
+  "/admin/users",
+  "/admin/manage",
+  "/api/admin/admin-search",
+]);
 
 export const onRequest = defineMiddleware(async (context, next) => {
   if (
@@ -28,7 +33,10 @@ export const onRequest = defineMiddleware(async (context, next) => {
     if (hasAuthority) {
       return next();
     }
-    return new Response(JSON.stringify("Not authorized"), { status: 403 });
+    return new Response(JSON.stringify("Not authorized."), {
+      status: 403,
+      statusText: "Not an administrator.",
+    });
   }
 
   if (status === "authorized") {

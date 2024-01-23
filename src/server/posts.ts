@@ -1,6 +1,6 @@
 import { comments, posts } from "@drizzle/schema/schema";
 import db, { type InsertComment, type InsertPost } from "~/server/db";
-import { eq, sql } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import type { PostData, SinglePostData } from "@utils/types";
 
 export const createPost = async (data: InsertPost) => {
@@ -12,8 +12,6 @@ export const createComment = async (data: InsertComment) => {
   const insertData = await db.insert(comments).values(data);
   return;
 };
-
-const getAllPosts = async () => {};
 
 export const getPosts = async (
   limit: number,
