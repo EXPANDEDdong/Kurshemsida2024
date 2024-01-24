@@ -24,7 +24,7 @@ CREATE TABLE `userPerms` (
 --> statement-breakpoint
 CREATE TABLE `user` (
 	`id` varchar(128) NOT NULL,
-	`email` varchar(50),
+	`email` varchar(50) NOT NULL,
 	`username` varchar(36) NOT NULL,
 	`description` varchar(150),
 	`password` text NOT NULL,

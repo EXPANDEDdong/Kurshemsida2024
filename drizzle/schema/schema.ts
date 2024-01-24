@@ -13,7 +13,7 @@ export const users = mysqlTable("user", {
   id: varchar("id", { length: 128 })
     .$defaultFn(() => createId())
     .primaryKey(),
-  email: varchar("email", { length: 50 }).unique(),
+  email: varchar("email", { length: 50 }).unique().notNull(),
   username: varchar("username", { length: 36 }).unique().notNull(),
   description: varchar("description", { length: 150 }).$default(
     () => "User Description"

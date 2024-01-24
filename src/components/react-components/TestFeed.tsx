@@ -78,7 +78,7 @@ function Feed({
       setIsLoading(false);
     }
   };
-  const fetchDataDebounced = debounce(fetchData, 200);
+  const fetchDataDebounced = debounce(fetchData, 500);
   const observerTarget = useRef(null);
 
   useEffect(() => {

@@ -62,6 +62,6 @@ export type UserProps = {
   username: string;
   description: string | null;
   id: string;
-  email: string | null;
+  email: string;
   role: userRole;
 };

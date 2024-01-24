@@ -202,7 +202,7 @@ export const searchUsersAdmin = async (
   Array<
     Pick<UserData, "username" | "description" | "permissions"> & {
       id: string;
-      email: string | null;
+      email: string;
     }
   >
 > => {
