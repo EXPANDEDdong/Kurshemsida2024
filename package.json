@@ -26,7 +26,7 @@
     "daisyui": "^4.4.19",
     "deepmerge": "^4.3.1",
     "dotenv": "^16.3.1",
-    "drizzle-orm": "^0.28.6",
+    "drizzle-orm": "^0.29.3",
     "jose": "^4.15.1",
     "lucide-preact": "^0.294.0",
     "nanostores": "^0.9.5",
@@ -38,6 +38,7 @@
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.0",
-    "drizzle-kit": "^0.19.13"
+    "drizzle-kit": "^0.20.13",
+    "mysql2": "^3.8.0"
   }
 }

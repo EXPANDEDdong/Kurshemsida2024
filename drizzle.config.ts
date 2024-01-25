@@ -9,6 +9,6 @@ export default {
   out: "./drizzle/migrations",
   driver: "mysql2",
   dbCredentials: {
-    connectionString: String(process.env.DATABASE_URL),
+    uri: String(process.env.DATABASE_URL),
   },
 } satisfies Config;
