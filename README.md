@@ -77,3 +77,6 @@ Just hop on over to account settings again and you will find what you need.
   
 ![Deleting your account](./images/GuideDeleteAccount.png)
 > Farewell, you absolute clown 🤡
+
+---
+
