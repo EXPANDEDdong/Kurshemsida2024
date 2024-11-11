@@ -1,46 +1,34 @@
 ---
-import fetchJson from "@utils/fetchJson";
-import CommentsList from "@components/CommentsList";
-import { importJWK } from "jose";
-import { verifyToken } from "~/server/users";
+import CommentsList from "@components/react-components/CommentsList";
 import Userpage from "@layouts/Userpage.astro";
+import { getCurrentUser, getUserPage } from "~/server/misc";
 const { user } = Astro.params;
-
-const origin = Astro.url.origin;
-const body = {
-  username: user,
-};
-const userPage = await fetchJson(`${origin}/api/getuser`, {
-  method: "POST",
-  body: JSON.stringify(body),
-});
-if (!userPage?.username) {
+if (!user) {
   return Astro.redirect("/404");
 }
-const authToken = Astro.cookies.get("authToken")?.value;
-if (!authToken) return Astro.redirect("/404");
-
-const secretKey = await importJWK({
-  kty: "oct",
-  k: import.meta.env.JWT_SECRET,
-  alg: "HS256",
-});
-const { payload } = await verifyToken(authToken, secretKey);
-if (!payload) return;
-const currentUser = payload.username;
+const userPage = await getUserPage(user);
+if (!userPage) {
+  return Astro.redirect("/404");
+}
+const result = await getCurrentUser(Astro.request);
+if (!result.user) {
+  return;
+}
+const { username } = result.user;
 ---
 
 <Userpage
   username={userPage.username}
-  bio={userPage.description}
-  role={userPage.role}
+  bio={userPage.description || "No Description"}
+  role={userPage.permissions.role}
 >
   <div class="w-full">
     <CommentsList
       comments={userPage.comments}
       onUserPage={true}
-      currentUser={currentUser}
+      currentUser={username}
       client:visible
     />
+    <div class="h-48"></div>
   </div>
 </Userpage>

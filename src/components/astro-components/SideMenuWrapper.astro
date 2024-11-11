@@ -1,0 +1,14 @@
+---
+import type { userRole } from "@utils/types";
+import SideMenu from "~/components/react-components/SideMenu";
+interface Props {
+  username: string;
+  role: userRole;
+}
+
+const { username, role } = Astro.props;
+---
+
+<aside class="w-full h-full">
+  <SideMenu username={username} role={role} client:only="preact" />
+</aside>

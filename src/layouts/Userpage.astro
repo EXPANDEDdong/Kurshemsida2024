@@ -1,10 +1,11 @@
 ---
-import BottomNav from "@components/BottomNav";
-import Navbar from "@components/Navbar.astro";
-import HideOnMobile from "@components/blocks/HideOnMobile";
-import SideMenuWrapper from "@components/SideMenuWrapper.astro";
-import { ViewTransitions, slide } from "astro:transitions";
-import BottomNavWrapper from "@components/BottomNavWrapper.astro";
+import Navbar from "@components/astro-components/Navbar.astro";
+import SideMenuWrapper from "@components/astro-components/SideMenuWrapper.astro";
+import { ViewTransitions } from "astro:transitions";
+import BottomNav from "@components/astro-components/BottomNav.astro";
+import { getCurrentUser } from "~/server/misc";
+import BottomNavTransitionWrapper from "@components/blocks/BottomNavTransitionWrapper";
+import SideMenuTransitionWrapper from "@components/blocks/SideMenuTransitionWrapper";
 interface Props {
   username: string;
   bio: string;
@@ -13,10 +14,15 @@ interface Props {
 const origin = Astro.url.origin;
 const url = Astro.url.pathname;
 const { username, bio, role } = Astro.props;
+
+const { user } = await getCurrentUser(Astro.request);
+if (!user) {
+  return Astro.redirect("/login");
+}
 ---
 
 <!doctype html>
-<html lang="en" class="w-screen h-screen bg-base-300" transition:persist>
+<html lang="en" class="w-screen h-screen bg-base-300">
   <head>
     <meta charset="UTF-8" />
     <meta name="description" content="Astro description" />
@@ -26,21 +32,21 @@ const { username, bio, role } = Astro.props;
     <ViewTransitions />
     <title>{username}</title>
   </head>
-  <body class="w-full h-full bg-base-300 fixed">
-    <Navbar />
-    <div class="w-full flex flex-row h-full">
-      <div class="w-full">
+  <body class="fixed w-full h-full bg-base-300">
+    <Navbar username={user.username} role={user.role} />
+    <div class="flex flex-row w-full h-full no-scrollbars">
+      <div class="w-full overflow-y-auto overflow-x-clip no-scrollbars">
         <div
-          class="bg-base-100 shadow-xl rounded-lg m-2 mb-8 flex flex-col gap-4 p-4"
+          class="flex flex-col gap-4 p-4 m-2 mb-8 rounded-lg shadow-xl bg-base-100"
         >
           <h1 class="text-2xl font-bold">{username}</h1>
           {role === "admin" && <div class="badge badge-warning">Admin</div>}
           <p class="text-lg">{bio}</p>
         </div>
-        <div class="w-full flex justify-center">
+        <div class="flex justify-center w-full">
           <div
             role="tablist"
-            class="tabs tabs-boxed w-11/12 mb-8"
+            class="w-11/12 mb-8 tabs tabs-boxed"
             transition:animate="fade"
           >
             <a
@@ -63,26 +69,35 @@ const { username, bio, role } = Astro.props;
             </a>
           </div>
         </div>
-        <main
-          class="w-full h-full overflow-x-clip overflow-y-auto px-2 pt-2 z-40 no-scrollbars flex-grow"
-          transition:animate="fade"
-        >
+        <main class="z-40 flex-grow w-full h-full px-2 pt-2">
           <slot />
         </main>
       </div>
-      <HideOnMobile client:only="preact" transition:name="side-menu">
-        <div class="divider-horizontal bg-base-200 overflow-y-clip"></div>
-        <div class="w-fit h-full px-2 flex-grow-0">
-          <SideMenuWrapper />
-          <!-- <SideMenu client:only="preact" /> -->
-          <!-- <div class="flex flex-col pr-2 py-2 items-center h-full">
-          <PostForm client:visible />
-        </div> -->
+      <SideMenuTransitionWrapper transition:name="side-menu">
+        <div
+          class="divider-horizontal bg-base-200 overflow-y-clip max-[900px]:hidden"
+        >
         </div>
-      </HideOnMobile>
+        <div class="flex-grow-0 h-full px-2 w-fit max-[900px]:hidden">
+          <SideMenuWrapper username={user.username} role={user.role} />
+        </div>
+      </SideMenuTransitionWrapper>
     </div>
-    <footer class="relative z-50" transition:persist>
-      <BottomNavWrapper transition:name="btm-menu" />
-    </footer>
+    <BottomNavTransitionWrapper transition:name="btm">
+      <footer class="relative z-50 min-[900px]:hidden">
+        <BottomNav username={user.username} role={user.role} />
+      </footer>
+    </BottomNavTransitionWrapper>
+
+    <style is:global>
+      .no-scrollbars {
+        overflow: auto;
+        scrollbar-width: none;
+      }
+
+      .no-scrollbars::-webkit-scrollbar {
+        display: none;
+      }
+    </style>
   </body>
 </html>

@@ -1,12 +1,12 @@
 ---
-import CreateForm from "@components/CreateForm";
-import Layout from "@layouts/Layout.astro";
+import CreateForm from "@components/react-components/CreateForm";
+import LoginLayout from "@layouts/Login.astro";
 ---
 
-<Layout title="Create Account">
-  <main class="w-full h-full">
-    <div class="w-1/3 h-full">
+<LoginLayout title="Create Account">
+  <div class="w-11/12 h-full">
+    <div class="w-full h-full">
       <CreateForm client:load />
     </div>
-  </main>
-</Layout>
+  </div>
+</LoginLayout>

@@ -1,33 +1,7 @@
-import { comments, posts, users } from "@drizzle/schema/posts";
-import db, {
-  type InsertComment,
-  type InsertPost,
-  type InsertUser,
-  type SelectPost,
-} from "~/server/db";
+import { comments, posts } from "@drizzle/schema/schema";
+import db, { type InsertComment, type InsertPost } from "~/server/db";
 import { eq } from "drizzle-orm";
-import type { PostsData } from "./users";
-
-export interface PostsOnFeed {
-  id: string;
-  title: string;
-  content: string;
-  postedDate: Date;
-  user: {
-    username: string;
-    permissions: {
-      role: "user" | "admin";
-    };
-  };
-  comments: {
-    id: string;
-    content: string | null;
-    postedDate: Date;
-    user: {
-      username: string;
-    };
-  }[];
-}
+import type { PostData, SinglePostData } from "@utils/types";
 
 export const createPost = async (data: InsertPost) => {
   const insertData = await db.insert(posts).values(data);
@@ -36,12 +10,13 @@ export const createPost = async (data: InsertPost) => {
 
 export const createComment = async (data: InsertComment) => {
   const insertData = await db.insert(comments).values(data);
+  return;
 };
 
 export const getPosts = async (
   limit: number,
   offset: number
-): Promise<PostsOnFeed[]> => {
+): Promise<PostData[]> => {
   const posts = await db.query.posts.findMany({
     limit: limit,
     offset: offset,
@@ -70,10 +45,12 @@ export const getPosts = async (
             columns: {
               username: true,
             },
-          },
-          post: {
-            columns: {
-              id: true,
+            with: {
+              permissions: {
+                columns: {
+                  role: true,
+                },
+              },
             },
           },
         },
@@ -86,6 +63,7 @@ export const getPosts = async (
       postedDate: true,
     },
   });
+
   return posts;
 };
 
@@ -122,8 +100,8 @@ export const getCommentAuthorId = async (commentId: string) => {
 
 export const getSinglePost = async (
   postId: string
-): Promise<PostsOnFeed | undefined> => {
-  return await db.query.posts.findFirst({
+): Promise<SinglePostData | null> => {
+  const result = await db.query.posts.findFirst({
     where: eq(posts.id, postId),
     with: {
       user: {
@@ -150,10 +128,34 @@ export const getSinglePost = async (
             columns: {
               username: true,
             },
+            with: {
+              permissions: {
+                columns: {
+                  role: true,
+                },
+              },
+            },
           },
           post: {
             columns: {
               id: true,
+              title: true,
+              content: true,
+              postedDate: true,
+            },
+            with: {
+              user: {
+                columns: {
+                  username: true,
+                },
+                with: {
+                  permissions: {
+                    columns: {
+                      role: true,
+                    },
+                  },
+                },
+              },
             },
           },
         },
@@ -166,4 +168,8 @@ export const getSinglePost = async (
       postedDate: true,
     },
   });
+  if (!result) {
+    return null;
+  }
+  return result;
 };

@@ -1,7 +1,50 @@
 ---
 import Layout from "@layouts/Layout.astro";
+import { getAdminData } from "~/server/misc";
+import UserIcon from "@components/react-components/icons/UserIcon";
+import PostsIcon from "@components/react-components/icons/PostsIcon";
+import CommentsIcon from "@components/react-components/icons/CommentsIcon";
+import Settings from "@components/react-components/icons/Settings";
+
+const { users, posts, comments, admins } = await getAdminData();
 ---
 
 <Layout title="Admin">
-  <div>no</div>
+  <div class="w-full h-full grid lg:items-center justify-center">
+    <div class="flex flex-col gap-8">
+      <div class="stats shadow-md stats-vertical lg:stats-horizontal">
+        <div class="stat place-items-center">
+          <div class="stat-figure text-info">
+            <UserIcon height={36} width={36} />
+          </div>
+          <h5 class="stat-title">Users</h5>
+          <h2 class="stat-value text-info">{users}</h2>
+        </div>
+        <div class="stat place-items-center">
+          <div class="stat-figure text-success">
+            <PostsIcon height={36} width={36} />
+          </div>
+          <h5 class="stat-title">Posts</h5>
+          <h2 class="stat-value text-success">{posts}</h2>
+        </div>
+        <div class="stat place-items-center">
+          <div class="stat-figure text-error">
+            <CommentsIcon height={36} width={36} />
+          </div>
+          <h5 class="stat-title">Comments</h5>
+          <h2 class="stat-value text-error">{comments}</h2>
+        </div>
+        <div class="stat place-items-center">
+          <div class="stat-figure text-warning">
+            <Settings height={36} width={36} />
+          </div>
+          <h5 class="stat-title">Admins</h5>
+          <h2 class="stat-value text-warning">{admins}</h2>
+        </div>
+      </div>
+      <a href={"/admin/manage"} class="btn btn-block btn-info"
+        >Manage posts and users</a
+      >
+    </div>
+  </div>
 </Layout>

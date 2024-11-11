@@ -16,6 +16,7 @@
     "@astrojs/sitemap": "^3.0.0",
     "@astrojs/tailwind": "^5.0.0",
     "@astrojs/vercel": "^5.0.1",
+    "@nanostores/preact": "^0.5.0",
     "@paralleldrive/cuid2": "^2.2.2",
     "@planetscale/database": "^1.11.0",
     "@types/react": "^18.2.23",
@@ -25,9 +26,10 @@
     "daisyui": "^4.4.19",
     "deepmerge": "^4.3.1",
     "dotenv": "^16.3.1",
-    "drizzle-orm": "^0.28.6",
+    "drizzle-orm": "^0.29.3",
     "jose": "^4.15.1",
     "lucide-preact": "^0.294.0",
+    "nanostores": "^0.9.5",
     "preact": "^10.17.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -36,6 +38,7 @@
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.0",
-    "drizzle-kit": "^0.19.13"
+    "drizzle-kit": "^0.20.13",
+    "mysql2": "^3.8.0"
   }
 }

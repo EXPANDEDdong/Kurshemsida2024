@@ -1,0 +1,91 @@
+---
+import type { userRole } from "@utils/types";
+import Avatar from "~/components/react-components/icons/Avatar";
+import Icon from "~/components/react-components/icons/Icon";
+interface Props {
+  username: string;
+  role: userRole;
+}
+
+const { username, role } = Astro.props;
+const origin = Astro.url.origin;
+---
+
+<script>
+  // Define a function to handle dropdown behavior
+  const handleDropdown = () => {
+    const dropdownButton = document.getElementById("dropdownButton");
+    const dropdownContent = document.getElementById("dropdownContent");
+
+    if (!dropdownButton || !dropdownContent) {
+      return;
+    }
+
+    // Toggle dropdown on button click
+    dropdownButton.addEventListener("click", (event) => {
+      event.stopPropagation(); // Prevents the click event from reaching document and closing the dropdown
+      dropdownContent.classList.toggle("open");
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener("click", () => {
+      dropdownContent.classList.remove("open");
+    });
+
+    // Prevent dropdown from closing when clicking inside
+    dropdownContent.addEventListener("click", (event) => {
+      event.stopPropagation();
+    });
+  };
+  document.addEventListener("DOMContentLoaded", handleDropdown);
+</script>
+<header class="relative z-50 rounded-b-lg navbar bg-base-100">
+  <div class="flex-1">
+    <a href={`/`} class="flex flex-row btn btn-ghost" data-astro-prefetch
+      ><span class="text-[#1888f2]"><Icon height={24} width={24} /></span><span
+        class="text-xl">Kvitter</span
+      ></a
+    >
+  </div>
+  <div class="flex-none z-85">
+    <div class="dropdown dropdown-left z-90">
+      <div
+        id="dropdownButton"
+        tabindex="0"
+        role="button"
+        class="btn btn-ghost btn-circle avatar"
+      >
+        <div class="grid rounded-full">
+          <Avatar />
+        </div>
+      </div>
+      <ul
+        id="dropdownContent"
+        tabindex="0"
+        class="menu dropdown-content bg-base-200 rounded-box w-52 z-900"
+      >
+        <li><a href={`/user/${username}`}>Profile</a></li>
+        {
+          role === "admin" && (
+            <li>
+              <a href={`/admin`}>Admin</a>
+            </li>
+          )
+        }
+        <li><a href={`/settings`}>Settings</a></li>
+        <li>
+          {
+            /*
+          This is like this because prefetch is enabled due to view transitions. 
+          This means that whenever you hover over the log out button, you get logged out.
+          Will try to find a better solution later.
+          */
+          }
+          <button onclick="window.location.replace(`${origin}/logout`)"
+            >Log out</button
+          >
+        </li>
+      </ul>
+    </div>
+  </div>
+</header>

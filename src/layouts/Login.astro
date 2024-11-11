@@ -1,0 +1,53 @@
+---
+import Icon from "@components/react-components/icons/Icon";
+import { InfoIcon } from "lucide-preact";
+import { getCurrentUser } from "~/server/misc";
+
+interface Props {
+  title: string;
+}
+const { title } = Astro.props;
+let isLoggedIn: string = "";
+const { user } = await getCurrentUser(Astro.request);
+if (user && user.username) isLoggedIn = user.username;
+---
+
+<!doctype html>
+<html lang="en" class="w-screen h-screen">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="description" content="Astro description" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+  </head>
+  <body class="fixed w-full h-full bg-base-300">
+    <main class="grid items-center w-full h-full">
+      <div class="w-full">
+        <div class="flex flex-col items-center w-full mb-8">
+          <div class="flex flex-row gap-4 h-fit w-fit">
+            <span class="text-[#1888f2]"><Icon height={60} width={60} /></span
+            ><span class="text-6xl font-light">Kvitter</span>
+          </div>
+        </div>
+        <div class="flex flex-col items-center w-full h-full">
+          <slot />
+        </div>
+      </div>
+      {
+        isLoggedIn && (
+          <div class="absolute self-end w-11/12 mx-4 mb-4 alert justify-self-center">
+            <span class="text-info">
+              <InfoIcon height={32} width={32} />
+            </span>
+            <p class="text-lg">You are already logged in</p>
+            <a href={`/`} class="btn btn-outline btn-info btn- btn-sm">
+              Go to home
+            </a>
+          </div>
+        )
+      }
+    </main>
+  </body>
+</html>

@@ -1,12 +1,14 @@
 ---
-import SearchPage from "@components/SearchPage";
+import SearchPage from "@components/react-components/SearchPage";
 import Layout from "@layouts/Layout.astro";
-import { GET } from "./api/loggedinuser";
-const response = await GET(Astro);
-if (!(response instanceof Response)) return Astro.redirect("/404");
-const { username, role } = await response.json();
+import { getCurrentUser } from "~/server/misc";
+const { user } = await getCurrentUser(Astro.request);
+if (!user) {
+  return Astro.redirect("/login");
+}
+const currentUser = user.username;
 ---
 
 <Layout title="Search">
-  <SearchPage currentUser={username} client:load />
+  <SearchPage currentUser={currentUser} client:load />
 </Layout>

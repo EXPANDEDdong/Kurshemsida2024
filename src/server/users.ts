@@ -1,5 +1,10 @@
 import crypto from "crypto";
-import { comments, posts, userPermissions, users } from "@drizzle/schema/posts";
+import {
+  comments,
+  posts,
+  userPermissions,
+  users,
+} from "@drizzle/schema/schema";
 import db, { type InsertUser, type SelectUser } from "~/server/db";
 import { eq } from "drizzle-orm";
 import {
@@ -9,6 +14,7 @@ import {
   errors,
   type KeyLike,
 } from "jose";
+import type { UserData } from "@utils/types";
 
 interface CustomData {
   username: string;
@@ -152,51 +158,6 @@ export const createUser = async (
 };
 
 // ===============================================================================
-export interface CommentsData {
-  user: {
-    username: string;
-  };
-  id: string;
-  content: string | null;
-  postedDate: Date;
-  post: {
-    id: string;
-    title: string | null;
-    content: string | null;
-    postedDate: Date;
-    user: {
-      username: string | null;
-    };
-  };
-}
-
-export interface PostsData {
-  id: string;
-  title: string;
-  content: string;
-  postedDate: Date;
-  user: {
-    username: string;
-  };
-  comments: {
-    id: string;
-    content: string | null;
-    postedDate: Date;
-    user: {
-      username: string;
-    };
-  }[];
-}
-
-export interface UserData {
-  username: string;
-  description: string | null;
-  posts: PostsData[];
-  comments: CommentsData[];
-  permissions: {
-    role: "user" | "admin";
-  };
-}
 
 const verifyPassword = async (
   storedPassword: string,
@@ -208,34 +169,38 @@ const verifyPassword = async (
 };
 
 export const loginUser = async (
-  username: string,
+  email: string,
   providedPassword: string
-): Promise<{ message: string; user: SelectUser | null }> => {
+): Promise<{ success: boolean; message: string; user: SelectUser | null }> => {
   // Retrieve user from database
-  const user = await db
-    .select()
-    .from(users)
-    .where(eq(users.username, username));
+  const user = await db.select().from(users).where(eq(users.email, email));
 
   const userData: SelectUser = user[0];
 
   if (!userData) {
-    return { message: "Invalid username or password", user: null };
+    return { success: false, message: "Invalid email or password", user: null };
   }
 
   const isValid = await verifyPassword(userData.password, providedPassword);
-  if (isValid) {
-    // Passwords match
-
-    return { message: "Login Successful", user: userData };
-  } else {
+  if (!isValid) {
     // Passwords do not match
-    return { message: "Invalid username or password", user: null };
+    return { success: false, message: "Invalid email or password", user: null };
   }
+  // Passwords match
+  return { success: true, message: "Login Successful", user: userData };
 };
+
+function assignField<T, K extends keyof T>(target: T, source: T, field: K) {
+  target[field] = source[field];
+}
+
 export const getUser = async (
-  username: string
-): Promise<{ message: string; user: UserData | undefined | null }> => {
+  username: string,
+  fields?: Array<keyof UserData>
+): Promise<{
+  message: string;
+  user: Partial<UserData> | null;
+}> => {
   // Retrieve user from database along with
   // all posts and comments made by that user and the comments on those posts
 
@@ -264,6 +229,13 @@ export const getUser = async (
             columns: {
               username: true,
             },
+            with: {
+              permissions: {
+                columns: {
+                  role: true,
+                },
+              },
+            },
           },
           comments: {
             columns: {
@@ -275,6 +247,13 @@ export const getUser = async (
               user: {
                 columns: {
                   username: true,
+                },
+                with: {
+                  permissions: {
+                    columns: {
+                      role: true,
+                    },
+                  },
                 },
               },
             },
@@ -301,12 +280,26 @@ export const getUser = async (
                 columns: {
                   username: true,
                 },
+                with: {
+                  permissions: {
+                    columns: {
+                      role: true,
+                    },
+                  },
+                },
               },
             },
           },
           user: {
             columns: {
               username: true,
+            },
+            with: {
+              permissions: {
+                columns: {
+                  role: true,
+                },
+              },
             },
           },
         },
@@ -317,7 +310,18 @@ export const getUser = async (
     return { message: "Unsuccessful", user: null };
   }
 
-  return { message: "Success", user: user };
+  if (!fields) return { message: "Success", user: user };
+
+  // Might be useless but i made it so i dont have to fetch the posts and comments of a user when its not always needed
+  // Mainly just experimenting with typescript if its useless just lmk
+  const filteredUser: Partial<UserData> = {};
+  fields.forEach((field) => {
+    if (field in user) {
+      assignField<Partial<UserData>, typeof field>(filteredUser, user, field);
+    }
+  });
+
+  return { message: "Success", user: filteredUser };
 };
 
 export const isUserValid = async (
@@ -370,12 +374,15 @@ export const deleteUser = async (userId: string): Promise<boolean> => {
 
       // Finally, delete the user
       await trx.delete(users).where(eq(users.id, userId));
+      await trx
+        .delete(userPermissions)
+        .where(eq(userPermissions.userId, userId));
     });
 
     return true; // Indicates successful deletion
   } catch (error) {
-    console.error("Error deleting user:", error); // Improved error logging
-    return false; // Indicates an error occurred
+    console.error("Error deleting user:", error);
+    return false;
   }
 };
 

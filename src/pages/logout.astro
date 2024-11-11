@@ -1,0 +1,5 @@
+---
+import { GET } from "./api/users/logoutuser";
+await GET({ ...Astro, ResponseWithEncoding: Response });
+return Astro.redirect("/login");
+---
